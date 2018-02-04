@@ -10,13 +10,14 @@ func TestThatMinReturnsSmalles(t *testing.T) {
 	assertEqual_int(1, min(1, 1), t, "min")
 }
 
+func MakeProductionForTest(iron_mines, copper_mines, iron_smelters, copper_smelters int) Production {
+	return Production{iron_mines, copper_mines, iron_smelters, copper_smelters}
+}
+
 // Test Smelted
 // =============================================================================
 func createProductionForTestingSmelted(iron_smelters, copper_smelters int) Production {
-	prod := Production{}
-	prod.iron_smelters = iron_smelters
-	prod.copper_smelters = copper_smelters
-	return prod
+	return MakeProductionForTest(0, 0, iron_smelters, copper_smelters)
 }
 
 func createInventoryForTestingSmelted(iron_ore, copper_ore int) Inventory {
@@ -31,19 +32,19 @@ func testCreateInventoryForTestingSmelted(t *testing.T) {
 }
 
 func testCreateProductionForTestingSmelted(t *testing.T) {
-	assertEqual_Production(Production{1, 2, 0, 0}, createProductionForTestingSmelted(1, 2), t)
+	assertEqual_Production(MakeProductionForTest(1, 2, 0, 0), createProductionForTestingSmelted(1, 2), t)
 }
 
 func TestSmelted_ThatUpdateDoesntChangeProd(t *testing.T) {
-	var prod = Production{}
+	var prod = MakeProduction()
 	update_smelted(Inventory{}, prod)
 
-	assertEqual_Production(Production{}, prod, t)
+	assertEqual_Production(MakeProduction(), prod, t)
 }
 
 func TestSmelted_ThatUpdateReturnsIdenticalInventoryIfNoProd(t *testing.T) {
 	var inv = Inventory{}
-	var new_inv = update_smelted(inv, Production{})
+	var new_inv = update_smelted(inv, MakeProduction())
 
 	assertEqual_Inventory(new_inv, inv, t)
 }
@@ -57,7 +58,7 @@ func TestSmelted_ThatUpdateReturnsIdenticalInventoryIfNoOre(t *testing.T) {
 
 func TestSmel_DoesnChangeOriginal(t *testing.T) {
 	var inv = Inventory{}
-	update_smelted(inv, Production{1, 2, 3, 4})
+	update_smelted(inv, MakeProductionForTest(1, 2, 3, 4))
 
 	assertEqual_Inventory(Inventory{0, 0, 0, 0}, inv, t)
 }
@@ -120,7 +121,7 @@ func TestCantSmeltWhenNoInventory(t *testing.T) {
 // Test Harvested
 // =============================================================================
 func createProductionForTestingHarvested(iron_mines, copper_mines int) Production {
-	prod := Production{}
+	prod := MakeProduction()
 	prod.iron_mines = iron_mines
 	prod.copper_mines = copper_mines
 	return prod
@@ -134,15 +135,15 @@ func createInventoryForTestingHarvested(iron_ore, copper_ore int) Inventory {
 }
 
 func TestHarvest_ThatUpdateDoesntChangeProd(t *testing.T) {
-	var prod = Production{}
+	var prod = MakeProduction()
 	update_harvested(Inventory{}, prod)
 
-	assertEqual_Production(Production{}, prod, t)
+	assertEqual_Production(MakeProduction(), prod, t)
 }
 
 func TestHarvest_ThatUpdateReturnsIdenticalInventoryIfNoProd(t *testing.T) {
 	var inv = Inventory{}
-	var new_inv = update_harvested(inv, Production{})
+	var new_inv = update_harvested(inv, MakeProduction())
 
 	assertEqual_Inventory(new_inv, inv, t)
 }
@@ -183,19 +184,19 @@ func TestHarvest_ThatWeCanUpdateSeveralTimes(t *testing.T) {
 
 func TestHarvest_ThatWeCanUpdateProduction(t *testing.T) {
 	var inv = Inventory{}
-	var prod = Production{1, 2, 0, 0}
+	var prod = MakeProductionForTest(1, 2, 0, 0)
 
 	var new_inv = update_harvested(inv, prod)
 	assertEqual_Inventory(Inventory{1, 2, 0, 0}, new_inv, t)
 
-	prod = Production{2, 4, 0, 0}
+	prod = MakeProductionForTest(2, 4, 0, 0)
 	new_inv = update_harvested(new_inv, prod)
 	assertEqual_Inventory(Inventory{3, 6, 0, 0}, new_inv, t)
 
 	new_inv = update_harvested(new_inv, prod)
 	assertEqual_Inventory(Inventory{5, 10, 0, 0}, new_inv, t)
 
-	prod = Production{1, 0, 5, 5}
+	prod = MakeProductionForTest(1, 0, 5, 5)
 	new_inv = update_harvested(new_inv, prod)
 	assertEqual_Inventory(Inventory{6, 10, 0, 0}, new_inv, t)
 }
@@ -204,7 +205,7 @@ func TestHarvest_ThatWeCanUpdateProduction(t *testing.T) {
 // =============================================================================
 func TestHarvestSmelt_ThatWeCanUpdateProduction(t *testing.T) {
 	var inv = Inventory{}
-	var prod = Production{1, 2, 3, 4}
+	var prod = MakeProductionForTest(1, 2, 3, 4)
 
 	var new_inv = update_harvested(inv, prod)
 	assertEqual_Inventory(Inventory{1, 2, 0, 0}, new_inv, t)
@@ -217,7 +218,7 @@ func TestHarvestSmelt_ThatWeCanUpdateProduction(t *testing.T) {
 // =============================================================================
 func TestUpdate_UpdatesSmelt(t *testing.T) {
 	var inv = createInventoryForTestingSmelted(1, 2)
-	var prod = Production{0, 0, 3, 4}
+	var prod = MakeProductionForTest(0, 0, 3, 4)
 
 	var new_inv = update_inventory(inv, prod)
 	assertEqual_Inventory(Inventory{0, 0, 1, 2}, new_inv, t)
@@ -233,7 +234,7 @@ func TestUpdate_UpdatesSmelt(t *testing.T) {
 
 func TestUpdate_UpdatesHarvest(t *testing.T) {
 	var inv = createInventoryForTestingSmelted(0, 0)
-	var prod = Production{1, 2, 0, 0}
+	var prod = MakeProductionForTest(1, 2, 0, 0)
 
 	var new_inv = update_inventory(inv, prod)
 	assertEqual_Inventory(Inventory{1, 2, 0, 0}, new_inv, t)
@@ -247,7 +248,7 @@ func TestUpdate_UpdatesHarvest(t *testing.T) {
 
 func TestUpdate_UpdatesHarvestAndSmeltAllValuesSame(t *testing.T) {
 	var inv = createInventoryForTestingSmelted(0, 0)
-	var prod = Production{1, 1, 1, 1}
+	var prod = MakeProductionForTest(1, 1, 1, 1)
 
 	var new_inv = update_inventory(inv, prod)
 	assertEqual_Inventory(Inventory{0, 0, 1, 1}, new_inv, t)
@@ -261,7 +262,7 @@ func TestUpdate_UpdatesHarvestAndSmeltAllValuesSame(t *testing.T) {
 
 func TestUpdate_UpdatesHarvestAndSmeltSameValuesForMineAndSmelt(t *testing.T) {
 	var inv = createInventoryForTestingSmelted(0, 0)
-	var prod = Production{2, 2, 1, 1}
+	var prod = MakeProductionForTest(2, 2, 1, 1)
 
 	var new_inv = update_inventory(inv, prod)
 	assertEqual_Inventory(Inventory{1, 1, 1, 1}, new_inv, t)
@@ -275,7 +276,7 @@ func TestUpdate_UpdatesHarvestAndSmeltSameValuesForMineAndSmelt(t *testing.T) {
 
 func TestUpdate_UpdatesHarvestAndSmelt(t *testing.T) {
 	var inv = createInventoryForTestingSmelted(0, 0)
-	var prod = Production{3, 4, 1, 2}
+	var prod = MakeProductionForTest(3, 4, 1, 2)
 
 	var new_inv = update_inventory(inv, prod)
 	assertEqual_Inventory(Inventory{2, 2, 1, 2}, new_inv, t)

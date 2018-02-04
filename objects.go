@@ -17,3 +17,7 @@ type Production struct {
 	iron_smelters   int
 	copper_smelters int
 }
+
+func MakeProduction() Production {
+	return Production{0, 0, 0, 0}
+}

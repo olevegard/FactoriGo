@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"strconv"
@@ -67,8 +68,11 @@ func main() {
 	state := &State{
 		bgColor: nk.NkRgba(28, 48, 62, 255),
 	}
-	state.inventory = Inventory{}
-	state.production = Production{}
+	state.gameState = MakeDefaultGameState()
+	gs := state.gameState
+	fmt.Printf("Begin I : %d C %d IP : %d CP : %d IM  : %d CM : %d IS : %d CS : %d\n",
+		gs.inventory.iron_ore, gs.inventory.copper_ore, gs.inventory.iron_plates, gs.inventory.copper_plates,
+		gs.production.iron_mines.count, gs.production.copper_mines.count, gs.production.iron_smelters.count, gs.production.copper_smelters.count)
 
 	fpsTicker := time.NewTicker(time.Second / 100)
 	for {
@@ -99,7 +103,7 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	addLine(ctx, "Iron Ore : ", inventory.iron_ore, func() {
+	addLine(ctx, "Iron Ore", inventory.iron_ore, func() {
 		inventory.iron_ore++
 	})
 
@@ -129,20 +133,20 @@ func createProduction(ctx *nk.Context, production Production) Production {
 		return production
 	}
 
-	addLine(ctx, "Iron Mines", production.iron_mines, func() {
-		production.iron_mines++
+	addLine(ctx, "Iron Mines", production.iron_mines.count, func() {
+		production.iron_mines.count++
 	})
 
-	addLine(ctx, "Copper Mines", production.copper_mines, func() {
-		production.copper_mines++
+	addLine(ctx, "Copper Mines", production.copper_mines.count, func() {
+		production.copper_mines.count++
 	})
 
-	addLine(ctx, "Iron Smelter", production.iron_smelters, func() {
-		production.iron_smelters++
+	addLine(ctx, "Iron Smelter", production.iron_smelters.count, func() {
+		production.iron_smelters.count++
 	})
 
-	addLine(ctx, "Copper Smelter", production.copper_smelters, func() {
-		production.copper_smelters++
+	addLine(ctx, "Copper Smelter", production.copper_smelters.count, func() {
+		production.copper_smelters.count++
 	})
 
 	nk.NkEnd(ctx)
@@ -169,9 +173,14 @@ func addLine(ctx *nk.Context, name string, count int, f func()) {
 
 func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
-	state.inventory = update_inventory(state.inventory, state.production)
-	state.production = createProduction(ctx, state.production)
-	state.inventory = createInventory(ctx, state.inventory)
+	state.gameState = UpdateInventory(state.gameState)
+	gs := state.gameState
+	fmt.Printf("Begin I : %d C %d IP : %d CP : %d IM  : %d CM : %d IS : %d CS : %d\n",
+		gs.inventory.iron_ore, gs.inventory.copper_ore, gs.inventory.iron_plates, gs.inventory.copper_plates,
+		gs.production.iron_mines.count, gs.production.copper_mines.count, gs.production.iron_smelters.count, gs.production.copper_smelters.count)
+
+	state.gameState.production = createProduction(ctx, state.gameState.production)
+	state.gameState.inventory = createInventory(ctx, state.gameState.inventory)
 
 	// Render
 	bg := make([]float32, 4)
@@ -185,10 +194,9 @@ func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 }
 
 type State struct {
-	bgColor    nk.Color
-	prop       int32
-	production Production
-	inventory  Inventory
+	bgColor   nk.Color
+	prop      int32
+	gameState GameState
 }
 
 func onError(code int32, msg string) {

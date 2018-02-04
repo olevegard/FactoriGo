@@ -1,31 +1,73 @@
 package main
 
-func update_harvested(inventory Inventory, production Production) Inventory {
-	new_inventory := inventory
+func UpdateTimeRemaining(productionUnit ProductionUnit) ProductionUnit {
+	if productionUnit.ticks_remaining == 0 {
+		productionUnit.ticks_remaining = productionUnit.ticks_per_cycle
+	}
 
-	new_inventory.iron_ore += production.iron_mines
-	new_inventory.copper_ore += production.copper_mines
-
-	return new_inventory
+	return productionUnit
 }
 
-func update_smelted(inventory Inventory, production Production) Inventory {
-	new_inventory := inventory
+func GetProductionIfTimeout(productionUnit ProductionUnit, inventory Inventory) Inventory {
+	if productionUnit.ticks_remaining == 0 {
+		inventory = productionUnit.doRecipe(inventory, productionUnit.count)
+	}
 
-	smelted := min(new_inventory.copper_ore, production.copper_smelters)
-	new_inventory.copper_ore -= smelted
-	new_inventory.copper_plates += smelted
-
-	smelted = min(new_inventory.iron_ore, production.iron_smelters)
-	new_inventory.iron_ore -= smelted
-	new_inventory.iron_plates += smelted
-
-	return new_inventory
+	return inventory
 }
 
-func update_inventory(inventory Inventory, production Production) Inventory {
-	new_inventory := update_harvested(inventory, production)
-	new_inventory = update_smelted(new_inventory, production)
+func CheckProductionUnitForNewBatch(productionUnit ProductionUnit, inventory Inventory) (Inventory, ProductionUnit) {
+	productionUnit.ticks_remaining--
 
-	return new_inventory
+	return GetProductionIfTimeout(productionUnit, inventory), UpdateTimeRemaining(productionUnit)
+}
+
+func UpdateInventory(gameState GameState) GameState {
+	gameState.inventory, gameState.production.iron_mines =
+		CheckProductionUnitForNewBatch(gameState.production.iron_mines, gameState.inventory)
+
+	gameState.inventory, gameState.production.copper_mines =
+		CheckProductionUnitForNewBatch(gameState.production.copper_mines, gameState.inventory)
+
+	gameState.inventory, gameState.production.iron_smelters =
+		CheckProductionUnitForNewBatch(gameState.production.iron_smelters, gameState.inventory)
+
+	gameState.inventory, gameState.production.copper_smelters =
+		CheckProductionUnitForNewBatch(gameState.production.copper_smelters, gameState.inventory)
+
+	return gameState
+}
+
+func MakeDefaultGameState() GameState {
+	production := Production{}
+
+	production.iron_mines = MakleProductionUnit(1,
+		func(inventory Inventory, count int) Inventory {
+			inventory.iron_ore += count
+			return inventory
+		})
+
+	production.copper_mines = MakleProductionUnit(1,
+		func(inventory Inventory, count int) Inventory {
+			inventory.copper_ore += count
+			return inventory
+		})
+
+	production.iron_smelters = MakleProductionUnit(2,
+		func(inventory Inventory, count int) Inventory {
+			newItems := min(inventory.iron_ore, count)
+			inventory.iron_ore -= newItems
+			inventory.iron_plates += newItems
+			return inventory
+		})
+
+	production.copper_smelters = MakleProductionUnit(2,
+		func(inventory Inventory, count int) Inventory {
+			newItems := min(inventory.copper_ore, count)
+			inventory.copper_ore -= newItems
+			inventory.copper_plates += newItems
+			return inventory
+		})
+
+	return GameState{Inventory{}, production}
 }

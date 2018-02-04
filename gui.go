@@ -125,7 +125,7 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 }
 
 func createProduction(ctx *nk.Context, production Production) Production {
-	bounds := nk.NkRect(240, 50, 200, 150)
+	bounds := nk.NkRect(240, 50, 250, 150)
 	update := nk.NkBegin(ctx, "Production", bounds,
 		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowMinimizable|nk.WindowTitle)
 
@@ -156,13 +156,13 @@ func createProduction(ctx *nk.Context, production Production) Production {
 func addLine(ctx *nk.Context, name string, count int, f func()) {
 	nk.NkLayoutRowBegin(ctx, nk.LayoutDynamic, 20, 3)
 	{
-		nk.NkLayoutRowPush(ctx, 80)
+		nk.NkLayoutRowPush(ctx, 100)
 		nk.NkLabel(ctx, name+" : ", nk.TextLeft)
 
-		nk.NkLayoutRowPush(ctx, 40)
+		nk.NkLayoutRowPush(ctx, 30)
 		nk.NkLabel(ctx, strconv.Itoa(count), nk.TextRight)
 
-		nk.NkLayoutRowPush(ctx, 20)
+		nk.NkLayoutRowPush(ctx, 30)
 		if nk.NkButtonLabel(ctx, "+") > 0 {
 			f()
 		}
@@ -174,10 +174,6 @@ func addLine(ctx *nk.Context, name string, count int, f func()) {
 func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
 	state.gameState = UpdateInventory(state.gameState)
-	gs := state.gameState
-	fmt.Printf("Begin I : %d C %d IP : %d CP : %d IM  : %d CM : %d IS : %d CS : %d\n",
-		gs.inventory.iron_ore, gs.inventory.copper_ore, gs.inventory.iron_plates, gs.inventory.copper_plates,
-		gs.production.iron_mines.count, gs.production.copper_mines.count, gs.production.iron_smelters.count, gs.production.copper_smelters.count)
 
 	state.gameState.production = createProduction(ctx, state.gameState.production)
 	state.gameState.inventory = createInventory(ctx, state.gameState.inventory)

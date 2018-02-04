@@ -40,14 +40,14 @@ func assertNotEqual(expected string, actual string, t *testing.T, variable_name 
 func assertTrue(is_true bool, t *testing.T, variable_name string) {
 	if !is_true {
 		printStack(10)
-		t.Errorf("%v Should be true : %v", variable_name)
+		t.Errorf("%v Should be true", variable_name)
 	}
 }
 
 func assertFalse(is_false bool, t *testing.T, variable_name string) {
 	if is_false {
 		printStack(10)
-		t.Errorf("%v Should not be true : %v", variable_name)
+		t.Errorf("%v Should not be true", variable_name)
 	}
 }
 

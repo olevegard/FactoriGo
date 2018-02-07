@@ -34,7 +34,7 @@ func main() {
 	glfw.WindowHint(glfw.ContextVersionMinor, 2)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	win, err := glfw.CreateWindow(winWidth, winHeight, "Nuklear Demo", nil, nil)
+	win, err := glfw.CreateWindow(winWidth, winHeight, "FactoriGo Prototype", nil, nil)
 	if err != nil {
 		closer.Fatalln(err)
 	}

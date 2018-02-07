@@ -41,33 +41,43 @@ func UpdateInventory(gameState GameState) GameState {
 func MakeDefaultGameState() GameState {
 	production := Production{}
 
-	production.iron_mines = MakleProductionUnit(1,
+	production.iron_mines = MakeProductionUnit(1,
 		func(inventory Inventory, count int) Inventory {
-			inventory.iron_ore += count
+			inventory.iron_ore.count += count
 			return inventory
-		})
+		}, "Iron mines")
 
-	production.copper_mines = MakleProductionUnit(1,
+	production.copper_mines = MakeProductionUnit(1,
 		func(inventory Inventory, count int) Inventory {
-			inventory.copper_ore += count
+			inventory.copper_ore.count += count
 			return inventory
-		})
+		}, "Copper mines")
 
-	production.iron_smelters = MakleProductionUnit(2,
+	production.iron_smelters = MakeProductionUnit(2,
 		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.iron_ore, count)
-			inventory.iron_ore -= newItems
-			inventory.iron_plates += newItems
+			newItems := min(inventory.iron_ore.count, count)
+			inventory.iron_ore.count -= newItems
+			inventory.iron_plates.count += newItems
 			return inventory
-		})
+		}, "Iron furnaces")
 
-	production.copper_smelters = MakleProductionUnit(2,
+	production.copper_smelters = MakeProductionUnit(2,
 		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.copper_ore, count)
-			inventory.copper_ore -= newItems
-			inventory.copper_plates += newItems
+			newItems := min(inventory.copper_ore.count, count)
+			inventory.copper_ore.count -= newItems
+			inventory.copper_plates.count += newItems
 			return inventory
-		})
+		}, "Copper furnaces")
 
-	return GameState{Inventory{}, production}
+	return GameState{MakeDefaultInventory(), production}
+}
+
+func MakeDefaultInventory() Inventory {
+	io := InventoryItem{0, "Iron ore"}
+	co := InventoryItem{0, "Copper ore"}
+
+	ip := InventoryItem{0, "Iron plastes"}
+	cp := InventoryItem{0, "Copper plates"}
+	return Inventory{io, co, ip, cp}
+
 }

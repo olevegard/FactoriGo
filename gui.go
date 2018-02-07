@@ -69,11 +69,6 @@ func main() {
 		bgColor: nk.NkRgba(28, 48, 62, 255),
 	}
 	state.gameState = MakeDefaultGameState()
-	gs := state.gameState
-	fmt.Printf("Begin I : %d C %d IP : %d CP : %d IM  : %d CM : %d IS : %d CS : %d\n",
-		gs.inventory.iron_ore, gs.inventory.copper_ore, gs.inventory.iron_plates, gs.inventory.copper_plates,
-		gs.production.iron_mines.count, gs.production.copper_mines.count, gs.production.iron_smelters.count, gs.production.copper_smelters.count)
-
 	fpsTicker := time.NewTicker(time.Second / 100)
 	for {
 		select {
@@ -103,20 +98,20 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	addLine(ctx, "Iron Ore", inventory.iron_ore, func() {
-		inventory.iron_ore++
+	addLine(ctx, inventory.iron_ore, func() {
+		inventory.iron_ore.count++
 	})
 
-	addLine(ctx, "Copper Ore", inventory.copper_ore, func() {
-		inventory.copper_ore++
+	addLine(ctx, inventory.copper_ore, func() {
+		inventory.copper_ore.count++
 	})
 
-	addLine(ctx, "Iron Plates", inventory.iron_plates, func() {
-		inventory.iron_plates++
+	addLine(ctx, inventory.iron_plates, func() {
+		inventory.iron_plates.count++
 	})
 
-	addLine(ctx, "Copper Ore", inventory.copper_plates, func() {
-		inventory.copper_plates++
+	addLine(ctx, inventory.copper_plates, func() {
+		inventory.copper_plates.count++
 	})
 
 	nk.NkEnd(ctx)
@@ -133,19 +128,19 @@ func createProduction(ctx *nk.Context, production Production) Production {
 		return production
 	}
 
-	addLine(ctx, "Iron Mines", production.iron_mines.count, func() {
+	addLine(ctx, production.iron_mines, func() {
 		production.iron_mines.count++
 	})
 
-	addLine(ctx, "Copper Mines", production.copper_mines.count, func() {
+	addLine(ctx, production.copper_mines, func() {
 		production.copper_mines.count++
 	})
 
-	addLine(ctx, "Iron Smelter", production.iron_smelters.count, func() {
+	addLine(ctx, production.iron_smelters, func() {
 		production.iron_smelters.count++
 	})
 
-	addLine(ctx, "Copper Smelter", production.copper_smelters.count, func() {
+	addLine(ctx, production.copper_smelters, func() {
 		production.copper_smelters.count++
 	})
 
@@ -153,14 +148,14 @@ func createProduction(ctx *nk.Context, production Production) Production {
 	return production
 }
 
-func addLine(ctx *nk.Context, name string, count int, f func()) {
+func addLine(ctx *nk.Context, printable Printable, f func()) {
 	nk.NkLayoutRowBegin(ctx, nk.LayoutDynamic, 20, 3)
 	{
 		nk.NkLayoutRowPush(ctx, 100)
-		nk.NkLabel(ctx, name+" : ", nk.TextLeft)
+		nk.NkLabel(ctx, fmt.Sprintf("%s :", printable), nk.TextLeft)
 
 		nk.NkLayoutRowPush(ctx, 30)
-		nk.NkLabel(ctx, strconv.Itoa(count), nk.TextRight)
+		nk.NkLabel(ctx, strconv.Itoa(printable.Count()), nk.TextRight)
 
 		nk.NkLayoutRowPush(ctx, 30)
 		if nk.NkButtonLabel(ctx, "+") > 0 {

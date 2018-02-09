@@ -1,39 +1,27 @@
 package main
 
-func UpdateTimeRemaining(productionUnit ProductionUnit) ProductionUnit {
-	if productionUnit.ticks_remaining == 0 {
-		productionUnit.ticks_remaining = productionUnit.ticks_per_cycle
-	}
+func DoRecipdeIfTimedOut(productionUnit ProductionUnit, inventory Inventory) (Inventory, ProductionUnit) {
+	newProductionUnit, wasTimedOut := productionUnit.MaybeResetTick()
 
-	return productionUnit
-}
-
-func GetProductionIfTimeout(productionUnit ProductionUnit, inventory Inventory) Inventory {
-	if productionUnit.ticks_remaining == 0 {
+	if wasTimedOut {
 		inventory = productionUnit.doRecipe(inventory, productionUnit.count)
 	}
 
-	return inventory
-}
-
-func CheckProductionUnitForNewBatch(productionUnit ProductionUnit, inventory Inventory) (Inventory, ProductionUnit) {
-	productionUnit.ticks_remaining--
-
-	return GetProductionIfTimeout(productionUnit, inventory), UpdateTimeRemaining(productionUnit)
+	return inventory, newProductionUnit
 }
 
 func UpdateInventory(gameState GameState) GameState {
 	gameState.inventory, gameState.production.iron_mines =
-		CheckProductionUnitForNewBatch(gameState.production.iron_mines, gameState.inventory)
+		DoRecipdeIfTimedOut(gameState.production.iron_mines, gameState.inventory)
 
 	gameState.inventory, gameState.production.copper_mines =
-		CheckProductionUnitForNewBatch(gameState.production.copper_mines, gameState.inventory)
+		DoRecipdeIfTimedOut(gameState.production.copper_mines, gameState.inventory)
 
 	gameState.inventory, gameState.production.iron_smelters =
-		CheckProductionUnitForNewBatch(gameState.production.iron_smelters, gameState.inventory)
+		DoRecipdeIfTimedOut(gameState.production.iron_smelters, gameState.inventory)
 
 	gameState.inventory, gameState.production.copper_smelters =
-		CheckProductionUnitForNewBatch(gameState.production.copper_smelters, gameState.inventory)
+		DoRecipdeIfTimedOut(gameState.production.copper_smelters, gameState.inventory)
 
 	return gameState
 }

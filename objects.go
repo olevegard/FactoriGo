@@ -36,8 +36,8 @@ type DoRecipe func(Inventory, int) Inventory
 type ProductionUnit struct {
 	count int
 
-	ticks_remaining int // Time left until next batch of units
-	ticks_per_cycle int // Time it takes to complete a full cycle
+	ticks_remaining ResetableInt // Time left until next batch of units
+	ticks_per_cycle int          // Time it takes to complete a full cycle
 
 	doRecipe DoRecipe // The function that updates the recipe
 	name     string
@@ -47,7 +47,7 @@ func MakeProductionUnit(ticksPerCycle int, recipe DoRecipe, name string) Product
 	unit := ProductionUnit{}
 	unit.count = 0
 	unit.ticks_per_cycle = ticksPerCycle
-	unit.ticks_remaining = ticksPerCycle
+	unit.ticks_remaining = ResetableInt(ticksPerCycle)
 
 	unit.doRecipe = recipe
 	unit.name = name
@@ -74,4 +74,26 @@ func (inventoryItem InventoryItem) String() string {
 
 func (inventoryItem InventoryItem) Count() int {
 	return inventoryItem.count
+}
+
+type ResetableInt int
+
+func (value ResetableInt) ResetIfValue(conditionValue, resetValue int) (ResetableInt, bool) {
+	if int(value) == conditionValue {
+		return ResetableInt(resetValue), true
+	}
+	return value, false
+}
+
+type ProductionTimer struct {
+	ticks_remaining int
+	ticks_per_cycle int
+}
+
+func (unit ProductionUnit) MaybeResetTick() (ProductionUnit, bool) {
+	unit.ticks_remaining--
+	wasReset := false
+	unit.ticks_remaining, wasReset = unit.ticks_remaining.ResetIfValue(0, unit.ticks_per_cycle)
+
+	return unit, wasReset
 }

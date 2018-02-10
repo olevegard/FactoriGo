@@ -1,5 +1,7 @@
 package main
 
+type InventoryItemChangeSet []InventoryItemChange
+
 type Inventory struct {
 	items map[string]InventoryItem
 }
@@ -44,4 +46,12 @@ func ApplyInventoryItemChange(inventory Inventory, inventoryItemChange Inventory
 	newCount := inventory.items[inventoryItemChange.invetoryItemId].count + inventoryItemChange.changeAmount
 
 	return ChangeCountOfInventoryItemWithId(inventory, inventoryItemChange.invetoryItemId, newCount)
+}
+
+func ApplyInventoryItemChangeSet(inventory Inventory, inventoryItemChangeSet InventoryItemChangeSet) Inventory {
+	for _, change := range inventoryItemChangeSet {
+		inventory = ApplyInventoryItemChange(inventory, change)
+	}
+
+	return inventory
 }

@@ -80,3 +80,21 @@ func TestThatApplyInventoryItemChangeAppliesNegativeChange(t *testing.T) {
 
 	assert.Equal(t, 2, inventory.items[inventoryItem.id].count)
 }
+
+func TestThatWeCanApplyASetOfChangesToInventory(t *testing.T) {
+	inventoryItemChangeSet := InventoryItemChangeSet{}
+	inventoryItemChangeSet = append(inventoryItemChangeSet, NewInventoryChange("iron_ore", 3))
+	inventoryItemChangeSet = append(inventoryItemChangeSet, NewInventoryChange("copper_ore", -1))
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{5, "Iron ore", "iron_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Copper ore", "copper_ore"})
+
+	assert.Equal(t, 5, inventory.items["iron_ore"].count)
+	assert.Equal(t, 3, inventory.items["copper_ore"].count)
+
+	ApplyInventoryItemChangeSet(inventory, inventoryItemChangeSet)
+
+	assert.Equal(t, 8, inventory.items["iron_ore"].count)
+	assert.Equal(t, 2, inventory.items["copper_ore"].count)
+}

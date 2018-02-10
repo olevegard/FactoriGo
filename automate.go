@@ -31,29 +31,30 @@ func MakeDefaultGameState() GameState {
 
 	production.iron_mines = MakeProductionUnit(1,
 		func(inventory Inventory, count int) Inventory {
-			inventory.iron_ore.count += count
-			return inventory
+			return ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", count))
 		}, "Iron mines")
 
 	production.copper_mines = MakeProductionUnit(1,
 		func(inventory Inventory, count int) Inventory {
-			inventory.copper_ore.count += count
-			return inventory
+
+			return ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", count))
 		}, "Copper mines")
 
 	production.iron_smelters = MakeProductionUnit(2,
 		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.iron_ore.count, count)
-			inventory.iron_ore.count -= newItems
-			inventory.iron_plates.count += newItems
+			newItems := min(inventory.items["iron_ore"].count, count)
+			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", newItems*-1))
+
+			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_plates", newItems))
 			return inventory
 		}, "Iron furnaces")
 
 	production.copper_smelters = MakeProductionUnit(2,
 		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.copper_ore.count, count)
-			inventory.copper_ore.count -= newItems
-			inventory.copper_plates.count += newItems
+			newItems := min(inventory.items["copper_ore"].count, count)
+			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", newItems*-1))
+
+			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_plates", newItems))
 			return inventory
 		}, "Copper furnaces")
 
@@ -61,11 +62,16 @@ func MakeDefaultGameState() GameState {
 }
 
 func MakeDefaultInventory() Inventory {
-	io := InventoryItem{0, "Iron ore"}
-	co := InventoryItem{0, "Copper ore"}
+	inventory := NewInventory()
+	io := InventoryItem{0, "Iron ore", "iron_ore"}
+	co := InventoryItem{0, "Copper ore", "copper_ore"}
 
-	ip := InventoryItem{0, "Iron plastes"}
-	cp := InventoryItem{0, "Copper plates"}
-	return Inventory{io, co, ip, cp}
+	ip := InventoryItem{0, "Iron plates", "iron_plates"}
+	cp := InventoryItem{0, "Copper plates", "copper_plates"}
+	inventory = AddInventoryItem(inventory, io)
+	inventory = AddInventoryItem(inventory, co)
+	inventory = AddInventoryItem(inventory, ip)
+	inventory = AddInventoryItem(inventory, cp)
+	return inventory
 
 }

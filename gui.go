@@ -98,20 +98,18 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	addLine(ctx, inventory.iron_ore, func() {
-		inventory.iron_ore.count++
+	addLine(ctx, inventory.items["iron_ore"], func() {
+		inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", 1))
 	})
 
-	addLine(ctx, inventory.copper_ore, func() {
-		inventory.copper_ore.count++
+	addLine(ctx, inventory.items["copper_ore"], func() {
+		inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", 1))
 	})
 
-	addLine(ctx, inventory.iron_plates, func() {
-		inventory.iron_plates.count++
+	addLine(ctx, inventory.items["iron_plates"], func() {
 	})
 
-	addLine(ctx, inventory.copper_plates, func() {
-		inventory.copper_plates.count++
+	addLine(ctx, inventory.items["copper_plates"], func() {
 	})
 
 	nk.NkEnd(ctx)

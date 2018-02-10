@@ -1,3 +1,16 @@
+// TODO:
+// 1. Inventory items should be refered to by an Enum or something similar.
+// 2. Find a way to represent change in inventory that can be easily converted to JSON
+// 		i.e. uint inventoryId, int inventoryChange { 'inventory_changes': [{'inventory_id':3, 'inventory_change':-3}, {'inventory_id':2, 'inventory_change:5}]}
+// 3. Have a function that takes a list of inventory changes and an inventory, that returns an inventory updated according to the list of inventory changes
+
+/*
+struct InvetoryItem
+	count int
+	name  string
+	id  "iron_ore"
+
+*/
 package main
 
 type GameState struct {
@@ -11,14 +24,8 @@ type Printable interface {
 	Count() int
 }
 
-type Inventory struct {
-	iron_ore   InventoryItem
-	copper_ore InventoryItem
-
-	iron_plates   InventoryItem
-	copper_plates InventoryItem
-}
-
+// Production
+// ============================================================================
 type Production struct {
 	// Harvested
 	iron_mines   ProductionUnit
@@ -61,11 +68,6 @@ func (production ProductionUnit) String() string {
 
 func (production ProductionUnit) Count() int {
 	return production.count
-}
-
-type InventoryItem struct {
-	count int
-	name  string
 }
 
 func (inventoryItem InventoryItem) String() string {

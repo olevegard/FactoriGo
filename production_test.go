@@ -30,13 +30,13 @@ func TestThatTestThatWeCanGetInventoryItemSucceedsWhenInventoryHasItemsNeeded(t 
 	inventory = AddInventoryItem(inventory, InventoryItem{4, "Copper Ore", "copper_ore"})
 
 	newProductionUnit, newInventory := BuilNewProductionUnit(productionUnit, inventory)
-	assert.Equal(t, 1, newProductionUnit.count)
+	assert.Equal(t, 1, newProductionUnit.UnitCount)
 
-	assert.Equal(t, 2, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 2, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 2, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 2, newInventory.Items["copper_ore"].ItemCount)
 
-	assert.Equal(t, 3, inventory.items["iron_ore"].count)
-	assert.Equal(t, 4, inventory.items["copper_ore"].count)
+	assert.Equal(t, 3, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 4, inventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatMultiplyChageSetForProductionMultipliesCorrectly(t *testing.T) {
@@ -46,10 +46,10 @@ func TestThatMultiplyChageSetForProductionMultipliesCorrectly(t *testing.T) {
 
 	newChangeSet := MultiplyChageSetForProduction(changeSet, 2)
 
-	assert.Equal(t, "iron_ore", newChangeSet[0].invetoryItemId)
-	assert.Equal(t, 2, newChangeSet[0].changeAmount)
-	assert.Equal(t, "copper_ore", newChangeSet[1].invetoryItemId)
-	assert.Equal(t, 4, newChangeSet[1].changeAmount)
+	assert.Equal(t, "iron_ore", newChangeSet[0].InventoryItemId)
+	assert.Equal(t, 2, newChangeSet[0].ChangeAmount)
+	assert.Equal(t, "copper_ore", newChangeSet[1].InventoryItemId)
+	assert.Equal(t, 4, newChangeSet[1].ChangeAmount)
 }
 
 func TestThatCreateNewProductionBatchCreatesCorrectBatch(t *testing.T) {
@@ -57,7 +57,7 @@ func TestThatCreateNewProductionBatchCreatesCorrectBatch(t *testing.T) {
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
 	changeSet = append(changeSet, NewInventoryChange("copper_ore", 2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
-	productionUnit.count = 1
+	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
@@ -65,10 +65,10 @@ func TestThatCreateNewProductionBatchCreatesCorrectBatch(t *testing.T) {
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 1, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 3, newInventory.items["copper_ore"].count)
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 1, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 3, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatCreateNewProductionBatchReturnsUpdatedProducionUnit(t *testing.T) {
@@ -76,7 +76,7 @@ func TestThatCreateNewProductionBatchReturnsUpdatedProducionUnit(t *testing.T) {
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
 	changeSet = append(changeSet, NewInventoryChange("copper_ore", 2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(2, "Iron Mine", changeSet)
-	productionUnit.count = 1
+	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
@@ -84,19 +84,19 @@ func TestThatCreateNewProductionBatchReturnsUpdatedProducionUnit(t *testing.T) {
 
 	newProductionUnit, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
-	assert.Equal(t, 1, int(newProductionUnit.ticks_remaining))
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 1, int(newProductionUnit.TicksRemaining))
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
 
 	newProductionUnit, newInventory = CreateNewBatchIfTimeBecomes0(newProductionUnit, inventory)
 
-	assert.Equal(t, 2, int(newProductionUnit.ticks_remaining))
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 1, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 3, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 2, int(newProductionUnit.TicksRemaining))
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 1, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 3, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatCreateNewProductionBatchDoesntChangeBatchIfCountIs0(t *testing.T) {
@@ -104,7 +104,7 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfCountIs0(t *testing.T) {
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
 	changeSet = append(changeSet, NewInventoryChange("copper_ore", 2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
-	productionUnit.count = 0
+	productionUnit.UnitCount = 0
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
@@ -112,10 +112,10 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfCountIs0(t *testing.T) {
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatCreateNewProductionBatchDoesntChangeBatchIfNotTimedOut(t *testing.T) {
@@ -123,7 +123,7 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfNotTimedOut(t *testing.T
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
 	changeSet = append(changeSet, NewInventoryChange("copper_ore", 2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(2, "Iron Mine", changeSet)
-	productionUnit.count = 1
+	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
@@ -131,10 +131,10 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfNotTimedOut(t *testing.T
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatCreateNewProductionBatchCanCreateManyNewItems(t *testing.T) {
@@ -142,7 +142,7 @@ func TestThatCreateNewProductionBatchCanCreateManyNewItems(t *testing.T) {
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
 	changeSet = append(changeSet, NewInventoryChange("copper_ore", 2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
-	productionUnit.count = 1000
+	productionUnit.UnitCount = 1000
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
@@ -150,10 +150,10 @@ func TestThatCreateNewProductionBatchCanCreateManyNewItems(t *testing.T) {
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
-	assert.Equal(t, "Iron Ore", newInventory.items["iron_ore"].name)
-	assert.Equal(t, 1000, newInventory.items["iron_ore"].count)
-	assert.Equal(t, "Copper Ore", newInventory.items["copper_ore"].name)
-	assert.Equal(t, 2001, newInventory.items["copper_ore"].count)
+	assert.Equal(t, "Iron Ore", newInventory.Items["iron_ore"].Name)
+	assert.Equal(t, 1000, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, "Copper Ore", newInventory.Items["copper_ore"].Name)
+	assert.Equal(t, 2001, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatMultiplyChageSetForProductionDoesntChangeOriginal(t *testing.T) {
@@ -163,10 +163,10 @@ func TestThatMultiplyChageSetForProductionDoesntChangeOriginal(t *testing.T) {
 
 	MultiplyChageSetForProduction(changeSet, 2)
 
-	assert.Equal(t, "iron_ore", changeSet[0].invetoryItemId)
-	assert.Equal(t, 1, changeSet[0].changeAmount)
-	assert.Equal(t, "copper_ore", changeSet[1].invetoryItemId)
-	assert.Equal(t, 2, changeSet[1].changeAmount)
+	assert.Equal(t, "iron_ore", changeSet[0].InventoryItemId)
+	assert.Equal(t, 1, changeSet[0].ChangeAmount)
+	assert.Equal(t, "copper_ore", changeSet[1].InventoryItemId)
+	assert.Equal(t, 2, changeSet[1].ChangeAmount)
 }
 
 func TestThatMultiplyChageSetForProductionReturnsSameIf1(t *testing.T) {
@@ -177,10 +177,10 @@ func TestThatMultiplyChageSetForProductionReturnsSameIf1(t *testing.T) {
 	newChangeSet := MultiplyChageSetForProduction(changeSet, 1)
 
 	assert.Equal(t, changeSet, newChangeSet)
-	assert.Equal(t, "iron_ore", changeSet[0].invetoryItemId)
-	assert.Equal(t, 1, changeSet[0].changeAmount)
-	assert.Equal(t, "copper_ore", changeSet[1].invetoryItemId)
-	assert.Equal(t, 2, changeSet[1].changeAmount)
+	assert.Equal(t, "iron_ore", changeSet[0].InventoryItemId)
+	assert.Equal(t, 1, changeSet[0].ChangeAmount)
+	assert.Equal(t, "copper_ore", changeSet[1].InventoryItemId)
+	assert.Equal(t, 2, changeSet[1].ChangeAmount)
 }
 
 func TestThatTestThatWeCanGetInventoryItemFailsWhenInventoryDoesntHaveItemsNeeded(t *testing.T) {
@@ -195,13 +195,13 @@ func TestThatTestThatWeCanGetInventoryItemFailsWhenInventoryDoesntHaveItemsNeede
 	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
 
 	newProductionUnit, newInventory := BuilNewProductionUnit(productionUnit, inventory)
-	assert.Equal(t, 0, newProductionUnit.count)
+	assert.Equal(t, 0, newProductionUnit.UnitCount)
 
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
 
-	assert.Equal(t, 0, inventory.items["iron_ore"].count)
-	assert.Equal(t, 1, inventory.items["copper_ore"].count)
+	assert.Equal(t, 0, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, inventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatWeCanCheckThatWeCanBuilProductionUnit(t *testing.T) {
@@ -237,13 +237,13 @@ func TestThatWeCanBuildNewProductionUnitDoesntChangeInv(t *testing.T) {
 	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron Ore", "iron_ore"})
 
 	assert.True(t, CanBuilNewProductionUnit(productionUnit, inventory))
-	assert.Equal(t, 1, inventory.items["iron_ore"].count)
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
 
 	buildNewChangeSet = append(buildNewChangeSet, NewInventoryChange("copper_ore", -1))
-	productionUnit.changeSetForBuildingNew = buildNewChangeSet
+	productionUnit.ChangeSetForBuildingNew = buildNewChangeSet
 
 	assert.False(t, CanBuilNewProductionUnit(productionUnit, inventory))
-	assert.Equal(t, 1, inventory.items["iron_ore"].count)
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatMakeProductionUnitCreatesProductionUnitCorrectly(t *testing.T) {
@@ -251,12 +251,12 @@ func TestThatMakeProductionUnitCreatesProductionUnitCorrectly(t *testing.T) {
 	recipeChangeSet := InventoryItemChangeSet{NewInventoryChange("copper_ore", 1)}
 	produciotUnit := MakeProductionUnit(1, "Iron Mine", recipeChangeSet, buildNewChangeSet)
 
-	assert.Equal(t, 0, produciotUnit.count)
-	assert.Equal(t, 1, produciotUnit.ticks_per_cycle)
-	assert.Equal(t, buildNewChangeSet, produciotUnit.changeSetForBuildingNew)
-	assert.Equal(t, recipeChangeSet, produciotUnit.recipeChangeSet)
-	assert.Equal(t, 1, int(produciotUnit.ticks_remaining))
-	assert.Equal(t, "Iron Mine", produciotUnit.name)
+	assert.Equal(t, 0, produciotUnit.UnitCount)
+	assert.Equal(t, 1, produciotUnit.TicksPerCycle)
+	assert.Equal(t, buildNewChangeSet, produciotUnit.ChangeSetForBuildingNew)
+	assert.Equal(t, recipeChangeSet, produciotUnit.RecipeChangeSet)
+	assert.Equal(t, 1, int(produciotUnit.TicksRemaining))
+	assert.Equal(t, "Iron Mine", produciotUnit.Name)
 }
 
 func TestThatResetableIntResetsIfValueIsEqualToResetValue(t *testing.T) {
@@ -285,8 +285,8 @@ func CheckThatUpdateProductionUnitTimerUpdateTickReturnsTrueAndResetsIfTicksRema
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 
 	assert.True(t, wasReset)
-	assert.Equal(t, 0, productionUnit.ticks_remaining)
-	assert.Equal(t, 2, productionUnit.ticks_per_cycle)
+	assert.Equal(t, 0, productionUnit.TicksRemaining)
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 
 }
 
@@ -296,8 +296,8 @@ func TestThatMaybeResetTickReturnsTrueAndResetsIfTicksRemainingIs0(t *testing.T)
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 
 	assert.True(t, wasReset)
-	assert.Equal(t, 1, int(productionUnit.ticks_remaining))
-	assert.Equal(t, 1, productionUnit.ticks_per_cycle)
+	assert.Equal(t, 1, int(productionUnit.TicksRemaining))
+	assert.Equal(t, 1, productionUnit.TicksPerCycle)
 }
 
 func TestThatMaybeResetTickReturnsDecrementsCount(t *testing.T) {
@@ -305,13 +305,13 @@ func TestThatMaybeResetTickReturnsDecrementsCount(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(2, "Iron Mine")
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 
-	assert.Equal(t, 2, productionUnit.ticks_per_cycle)
-	assert.Equal(t, 2, productionUnit.ticks_per_cycle)
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 	assert.True(t, wasReset)
-	assert.Equal(t, 2, productionUnit.ticks_per_cycle)
-	assert.Equal(t, 2, int(productionUnit.ticks_remaining))
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
+	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
 }
 
 func TestThatResetableIntResetsDoesntChangeOriginal(t *testing.T) {
@@ -330,6 +330,6 @@ func TestThatPRoductionUnitHasStringFunc(t *testing.T) {
 
 func TestThatPRoductionUnitHasCountFunc(t *testing.T) {
 	produciotUnit := MakeNewProductionUnitWithNoChangeSet(1, "Iron Mine")
-	produciotUnit.count = 1
+	produciotUnit.UnitCount = 1
 	assert.Equal(t, 1, produciotUnit.Count())
 }

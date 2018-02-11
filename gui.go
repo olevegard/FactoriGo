@@ -68,7 +68,8 @@ func main() {
 	state := &State{
 		bgColor: nk.NkRgba(28, 48, 62, 255),
 	}
-	state.gameState = MakeDefaultGameState()
+	state.gameState = ReadDefaultGameState()
+
 	fpsTicker := time.NewTicker(time.Second / 100)
 	for {
 		select {
@@ -98,20 +99,20 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	addLine(ctx, inventory.items["iron_ore"], func() {
+	addLine(ctx, inventory.Items["iron_ore"], func() {
 		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", 1))
 	})
 
-	addLine(ctx, inventory.items["copper_ore"], func() {
+	addLine(ctx, inventory.Items["copper_ore"], func() {
 		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", 1))
 	})
 
-	addLine(ctx, inventory.items["iron_plates"], func() {
+	addLine(ctx, inventory.Items["iron_plates"], func() {
 		// This should be disabled, but is left as a debug features
 		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_plates", 1))
 	})
 
-	addLine(ctx, inventory.items["copper_plates"], func() {
+	addLine(ctx, inventory.Items["copper_plates"], func() {
 		// This should be disabled, but is left as a debug features
 		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_plates", 1))
 	})
@@ -130,20 +131,20 @@ func createProduction(ctx *nk.Context, production Production, inventory Inventor
 		return GameState{inventory, production}
 	}
 
-	addLine(ctx, production.iron_mines, func() {
-		production.iron_mines, inventory = BuilNewProductionUnit(production.iron_mines, inventory)
+	addLine(ctx, production.IronMines, func() {
+		production.IronMines, inventory = BuilNewProductionUnit(production.IronMines, inventory)
 	})
 
-	addLine(ctx, production.copper_mines, func() {
-		production.copper_mines, inventory = BuilNewProductionUnit(production.copper_mines, inventory)
+	addLine(ctx, production.CopperMines, func() {
+		production.CopperMines, inventory = BuilNewProductionUnit(production.CopperMines, inventory)
 	})
 
-	addLine(ctx, production.iron_smelters, func() {
-		production.iron_smelters, inventory = BuilNewProductionUnit(production.iron_smelters, inventory)
+	addLine(ctx, production.IronSmelters, func() {
+		production.IronSmelters, inventory = BuilNewProductionUnit(production.IronSmelters, inventory)
 	})
 
-	addLine(ctx, production.copper_smelters, func() {
-		production.copper_smelters, inventory = BuilNewProductionUnit(production.copper_smelters, inventory)
+	addLine(ctx, production.CopperSmelters, func() {
+		production.CopperSmelters, inventory = BuilNewProductionUnit(production.CopperSmelters, inventory)
 	})
 
 	nk.NkEnd(ctx)
@@ -172,8 +173,8 @@ func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
 	state.gameState = UpdateInventory(state.gameState)
 
-	state.gameState = createProduction(ctx, state.gameState.production, state.gameState.inventory)
-	state.gameState.inventory = createInventory(ctx, state.gameState.inventory)
+	state.gameState = createProduction(ctx, state.gameState.CurrentProduction, state.gameState.CurrentInventory)
+	state.gameState.CurrentInventory = createInventory(ctx, state.gameState.CurrentInventory)
 
 	// Render
 	bg := make([]float32, 4)

@@ -2,12 +2,12 @@ package main
 
 type Production struct {
 	// Harvested
-	iron_mines   ProductionUnit
-	copper_mines ProductionUnit
+	IronMines   ProductionUnit
+	CopperMines ProductionUnit
 
 	// Smelted
-	iron_smelters   ProductionUnit
-	copper_smelters ProductionUnit
+	IronSmelters   ProductionUnit
+	CopperSmelters ProductionUnit
 }
 
 // Used to update Inventory for a recipe
@@ -15,41 +15,41 @@ type DoRecipe func(Inventory, int) Inventory
 
 // Any thing that can produce/mine/smelt etc...
 type ProductionUnit struct {
-	count int
+	UnitCount int
 
-	ticks_remaining ResetableInt // Time left until next batch of units
-	ticks_per_cycle int          // Time it takes to complete a full cycle
+	TicksRemaining ResetableInt // Time left until next batch of units
+	TicksPerCycle  int          // Time it takes to complete a full cycle
 
-	recipeChangeSet         InventoryItemChangeSet // Use InventoryItemChangeSet here? We then only need one function to do recipe that'll work for all ProductionUnits
-	changeSetForBuildingNew InventoryItemChangeSet // Use InventoryItemChangeSet here? We then only need one function to build new ProductionUnit that'll work for all ProductionUnits
-	name                    string
+	RecipeChangeSet         InventoryItemChangeSet // Use InventoryItemChangeSet here? We then only need one function to do recipe that'll work for all ProductionUnits
+	ChangeSetForBuildingNew InventoryItemChangeSet // Use InventoryItemChangeSet here? We then only need one function to build new ProductionUnit that'll work for all ProductionUnits
+	Name                    string
 }
 
 func MakeProductionUnit(ticksPerCycle int, name string, recipeChangeSet, changeSetForBuildingNew InventoryItemChangeSet) ProductionUnit {
 	unit := ProductionUnit{}
-	unit.count = 0
-	unit.ticks_per_cycle = ticksPerCycle
-	unit.ticks_remaining = ResetableInt(ticksPerCycle)
-	unit.recipeChangeSet = recipeChangeSet
+	unit.UnitCount = 0
+	unit.TicksPerCycle = ticksPerCycle
+	unit.TicksRemaining = ResetableInt(ticksPerCycle)
+	unit.RecipeChangeSet = recipeChangeSet
 
-	unit.changeSetForBuildingNew = changeSetForBuildingNew
+	unit.ChangeSetForBuildingNew = changeSetForBuildingNew
 
 	// unit.doRecipe = recipe
-	unit.name = name
+	unit.Name = name
 
 	return unit
 }
 
 func CanBuilNewProductionUnit(productionUnit ProductionUnit, inventory Inventory) bool {
-	canBuild, _ := ApplyInventoryItemChangeSet(inventory, productionUnit.changeSetForBuildingNew)
+	canBuild, _ := ApplyInventoryItemChangeSet(inventory, productionUnit.ChangeSetForBuildingNew)
 	return canBuild
 }
 
 func BuilNewProductionUnit(productionUnit ProductionUnit, inventory Inventory) (ProductionUnit, Inventory) {
-	canBuild, newInventory := ApplyInventoryItemChangeSet(inventory, productionUnit.changeSetForBuildingNew)
+	canBuild, newInventory := ApplyInventoryItemChangeSet(inventory, productionUnit.ChangeSetForBuildingNew)
 
 	if canBuild {
-		productionUnit.count++
+		productionUnit.UnitCount++
 		return productionUnit, newInventory
 	}
 	return productionUnit, inventory
@@ -64,7 +64,7 @@ func MultiplyChageSetForProduction(changeSet InventoryItemChangeSet, factor int)
 	for index, _ := range changeSet {
 		// Since we allocate a new InventoryItemChangeSet, we need to set the entire item first
 		newChangeSet[index] = changeSet[index]
-		newChangeSet[index].changeAmount *= factor
+		newChangeSet[index].ChangeAmount *= factor
 	}
 
 	return newChangeSet
@@ -77,17 +77,17 @@ func CreateNewBatchIfTimeBecomes0(productionUnit ProductionUnit, inventory Inven
 		return newProductionUnit, inventory
 	}
 
-	productionChangeSet := MultiplyChageSetForProduction(productionUnit.recipeChangeSet, productionUnit.count)
+	productionChangeSet := MultiplyChageSetForProduction(productionUnit.RecipeChangeSet, productionUnit.UnitCount)
 	_, newInventory := ApplyInventoryItemChangeSet(inventory, productionChangeSet)
 	return newProductionUnit, newInventory
 }
 
 func (production ProductionUnit) String() string {
-	return production.name
+	return production.Name
 }
 
 func (production ProductionUnit) Count() int {
-	return production.count
+	return production.UnitCount
 }
 
 type ResetableInt int
@@ -100,9 +100,9 @@ func (value ResetableInt) ResetIfValue(conditionValue, resetValue int) (bool, Re
 }
 
 func UpdateProductionUnitTimer(unit ProductionUnit) (bool, ProductionUnit) {
-	unit.ticks_remaining--
+	unit.TicksRemaining--
 	wasReset := false
-	wasReset, unit.ticks_remaining = unit.ticks_remaining.ResetIfValue(0, unit.ticks_per_cycle)
+	wasReset, unit.TicksRemaining = unit.TicksRemaining.ResetIfValue(0, unit.TicksPerCycle)
 
 	return wasReset, unit
 }

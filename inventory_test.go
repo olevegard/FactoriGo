@@ -11,9 +11,9 @@ func TestThatWeCanGetInventoryItem(t *testing.T) {
 	inventoryItem := InventoryItem{1, "Iron ore", "iron_ore"}
 	inventory = AddInventoryItem(inventory, inventoryItem)
 
-	returnedItem := inventory.items[inventoryItem.id]
+	returnedItem := inventory.Items[inventoryItem.Id]
 
-	if returnedItem.id != "iron_ore" {
+	if returnedItem.Id != "iron_ore" {
 		t.Fatal("Couldn't get item from Inventory")
 	}
 
@@ -25,9 +25,9 @@ func TestThatChangeCountAndReturnNewReturnsUpdateInventoryItem(t *testing.T) {
 	inventoryItem := InventoryItem{1, "Iron ore", "iron_ore"}
 	inventory = AddInventoryItem(inventory, inventoryItem)
 
-	inventory.items[inventoryItem.id] = changeCountAndReturnNew(inventory.items["iron_ore"], 4)
+	inventory.Items[inventoryItem.Id] = changeCountAndReturnNew(inventory.Items["iron_ore"], 4)
 
-	assert.Equal(t, 4, inventory.items["iron_ore"].count)
+	assert.Equal(t, 4, inventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatChangeCountOfInventoryItemWithIdUpdatesInventory(t *testing.T) {
@@ -36,7 +36,7 @@ func TestThatChangeCountOfInventoryItemWithIdUpdatesInventory(t *testing.T) {
 	inventory = AddInventoryItem(inventory, inventoryItem)
 	newInventory := changeCountOfInventoryItemWithId(inventory, "iron_ore", 2)
 
-	assert.Equal(t, 2, newInventory.items["iron_ore"].count)
+	assert.Equal(t, 2, newInventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatChangeCountOfInventoryItemWithIdDoesntChangeOriginalInv(t *testing.T) {
@@ -45,13 +45,13 @@ func TestThatChangeCountOfInventoryItemWithIdDoesntChangeOriginalInv(t *testing.
 	inventory = AddInventoryItem(inventory, inventoryItem)
 	newInventory := changeCountOfInventoryItemWithId(inventory, "iron_ore", 2)
 
-	assert.Equal(t, 2, newInventory.items["iron_ore"].count)
+	assert.Equal(t, 2, newInventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatCreateInventoryChangeReturnsExpectedInventoryItemChange(t *testing.T) {
 	expectedInventoryChange := InventoryItemChange{}
-	expectedInventoryChange.changeAmount = 3
-	expectedInventoryChange.invetoryItemId = "iron_ore"
+	expectedInventoryChange.ChangeAmount = 3
+	expectedInventoryChange.InventoryItemId = "iron_ore"
 	actuaInventoryChange := NewInventoryChange("iron_ore", 3)
 
 	assert.Equal(t, expectedInventoryChange, actuaInventoryChange)
@@ -66,10 +66,10 @@ func TestThatApplyInventoryItemChangeDoesntChangeOtherValues(t *testing.T) {
 	wasApplied, newInventory := ApplyInventoryItemChange(inventory, inventoryChange)
 
 	assert.True(t, wasApplied)
-	assert.Equal(t, 8, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 10, newInventory.items["copper_ore"].count)
-	assert.Equal(t, 5, inventory.items["iron_ore"].count)
-	assert.Equal(t, 10, inventory.items["copper_ore"].count)
+	assert.Equal(t, 8, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 10, newInventory.Items["copper_ore"].ItemCount)
+	assert.Equal(t, 5, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 10, inventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatApplyInventoryItemChangeAppliesPositiveChange(t *testing.T) {
@@ -80,7 +80,7 @@ func TestThatApplyInventoryItemChangeAppliesPositiveChange(t *testing.T) {
 
 	_, inventory = ApplyInventoryItemChange(inventory, inventoryChange)
 
-	assert.Equal(t, 8, inventory.items[inventoryItem.id].count)
+	assert.Equal(t, 8, inventory.Items[inventoryItem.Id].ItemCount)
 }
 
 func TestThatApplyInventoryItemChangeAppliesNegativeChange(t *testing.T) {
@@ -91,7 +91,7 @@ func TestThatApplyInventoryItemChangeAppliesNegativeChange(t *testing.T) {
 
 	_, inventory = ApplyInventoryItemChange(inventory, inventoryChange)
 
-	assert.Equal(t, 2, inventory.items[inventoryItem.id].count)
+	assert.Equal(t, 2, inventory.Items[inventoryItem.Id].ItemCount)
 }
 
 func TestThatWeCanApplyASetOfChangesToInventory(t *testing.T) {
@@ -103,13 +103,13 @@ func TestThatWeCanApplyASetOfChangesToInventory(t *testing.T) {
 	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore"})
 	inventory = AddInventoryItem(inventory, InventoryItem{4, "Copper Ore", "copper_ore"})
 
-	assert.Equal(t, 3, inventory.items["iron_ore"].count)
-	assert.Equal(t, 4, inventory.items["copper_ore"].count)
+	assert.Equal(t, 3, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 4, inventory.Items["copper_ore"].ItemCount)
 
 	_, inventory = ApplyInventoryItemChangeSet(inventory, inventoryItemChangeSet)
 
-	assert.Equal(t, 4, inventory.items["iron_ore"].count)
-	assert.Equal(t, 2, inventory.items["copper_ore"].count)
+	assert.Equal(t, 4, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 2, inventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatWeCantApplyASetOfChangesIfCountWillBeNegative(t *testing.T) {
@@ -121,14 +121,14 @@ func TestThatWeCantApplyASetOfChangesIfCountWillBeNegative(t *testing.T) {
 	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore"})
 	inventory = AddInventoryItem(inventory, InventoryItem{4, "Copper Ore", "copper_ore"})
 
-	assert.Equal(t, 3, inventory.items["iron_ore"].count)
-	assert.Equal(t, 4, inventory.items["copper_ore"].count)
+	assert.Equal(t, 3, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 4, inventory.Items["copper_ore"].ItemCount)
 
 	wasApplied, newInventory := ApplyInventoryItemChangeSet(inventory, inventoryItemChangeSet)
 
 	assert.False(t, wasApplied)
-	assert.Equal(t, 3, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 4, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 3, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 4, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatApplyInventoryItemChangeReturnsFalseIfFailed(t *testing.T) {
@@ -139,7 +139,7 @@ func TestThatApplyInventoryItemChangeReturnsFalseIfFailed(t *testing.T) {
 	wasChanged, newInventory := ApplyInventoryItemChange(inventory, inventoryChange)
 
 	assert.False(t, wasChanged)
-	assert.Equal(t, 1, newInventory.items["iron_ore"].count)
+	assert.Equal(t, 1, newInventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatApplyInventoryItemChangeReturnsCorrectResultIfNewCountIs0(t *testing.T) {
@@ -150,7 +150,7 @@ func TestThatApplyInventoryItemChangeReturnsCorrectResultIfNewCountIs0(t *testin
 	wasChanged, newInventory := ApplyInventoryItemChange(inventory, inventoryChange)
 
 	assert.True(t, wasChanged)
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
 }
 
 func TestThatGetNewCountAfterInventoryItemChangeReturnsCorrectCount(t *testing.T) {
@@ -178,16 +178,16 @@ func TestThatApplyInventoryItemChangeSetDoesntChangeOriginal(t *testing.T) {
 	inventory = AddInventoryItem(inventory, InventoryItem{2, "Iron Ore", "iron_ore"})
 	inventory = AddInventoryItem(inventory, InventoryItem{30, "Copper Ore", "copper_ore"})
 
-	assert.Equal(t, 2, inventory.items["iron_ore"].count)
-	assert.Equal(t, 30, inventory.items["copper_ore"].count)
+	assert.Equal(t, 2, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 30, inventory.Items["copper_ore"].ItemCount)
 
 	wasChanged, newInventory := ApplyInventoryItemChangeSet(inventory, inventoryItemChangeSet)
 
 	assert.True(t, wasChanged)
-	assert.Equal(t, 2, inventory.items["iron_ore"].count)
-	assert.Equal(t, 30, inventory.items["copper_ore"].count)
-	assert.Equal(t, 3, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 10, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 2, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 30, inventory.Items["copper_ore"].ItemCount)
+	assert.Equal(t, 3, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 10, newInventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatTestDeepCopyInventoryItemActuallyCopiesMap(t *testing.T) {
@@ -197,18 +197,18 @@ func TestThatTestDeepCopyInventoryItemActuallyCopiesMap(t *testing.T) {
 
 	newInventory := deepCopyInventory(inventory)
 
-	assert.Equal(t, 0, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
-	assert.Equal(t, 0, inventory.items["iron_ore"].count)
-	assert.Equal(t, 1, inventory.items["copper_ore"].count)
+	assert.Equal(t, 0, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
+	assert.Equal(t, 0, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, inventory.Items["copper_ore"].ItemCount)
 
 	newInventory = changeCountOfInventoryItemWithId(newInventory, "iron_ore", 3)
 
-	assert.Equal(t, 3, newInventory.items["iron_ore"].count)
-	assert.Equal(t, 1, newInventory.items["copper_ore"].count)
+	assert.Equal(t, 3, newInventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, newInventory.Items["copper_ore"].ItemCount)
 
-	assert.Equal(t, 0, inventory.items["iron_ore"].count)
-	assert.Equal(t, 1, inventory.items["copper_ore"].count)
+	assert.Equal(t, 0, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, inventory.Items["copper_ore"].ItemCount)
 }
 
 func TestThatInventoryItemHasStringFunc(t *testing.T) {

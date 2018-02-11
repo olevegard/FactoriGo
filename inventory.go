@@ -3,30 +3,30 @@ package main
 type InventoryItemChangeSet []InventoryItemChange
 
 type Inventory struct {
-	items map[string]InventoryItem
+	Items map[string]InventoryItem `json:"items"`
 }
 
 type InventoryItem struct {
-	count int
-	name  string
-	id    string
+	ItemCount int    `json:"count"`
+	Name      string `json:"name"`
+	Id        string `json:"id,id"`
 }
 
 func NewInventory() Inventory {
 	inventory := Inventory{}
-	inventory.items = map[string]InventoryItem{}
+	inventory.Items = map[string]InventoryItem{}
 	return inventory
 }
 
 func AddInventoryItem(inventory Inventory, inventoryItem InventoryItem) Inventory {
 	newInventory := deepCopyInventory(inventory)
-	newInventory.items[inventoryItem.id] = inventoryItem
+	newInventory.Items[inventoryItem.Id] = inventoryItem
 	return newInventory
 }
 
 type InventoryItemChange struct {
-	invetoryItemId string
-	changeAmount   int
+	InventoryItemId string
+	ChangeAmount    int
 }
 
 func NewInventoryChange(inventoryItemId string, changeAmount int) InventoryItemChange {
@@ -34,7 +34,7 @@ func NewInventoryChange(inventoryItemId string, changeAmount int) InventoryItemC
 }
 
 func GetNewCountAfterInventoryItemChange(inventory Inventory, inventoryItemChange InventoryItemChange) int {
-	return inventory.items[inventoryItemChange.invetoryItemId].count + inventoryItemChange.changeAmount
+	return inventory.Items[inventoryItemChange.InventoryItemId].ItemCount + inventoryItemChange.ChangeAmount
 }
 
 func ApplyInventoryItemChange(inventory Inventory, inventoryItemChange InventoryItemChange) (bool, Inventory) {
@@ -52,7 +52,7 @@ func ApplyInventoryItemChangeSet(inventory Inventory, inventoryItemChangeSet Inv
 		if newCount < 0 {
 			return false, inventory
 		}
-		newInventory = changeCountOfInventoryItemWithId(newInventory, change.invetoryItemId, newCount)
+		newInventory = changeCountOfInventoryItemWithId(newInventory, change.InventoryItemId, newCount)
 	}
 	return true, newInventory
 }
@@ -66,30 +66,30 @@ func ApplyInventoryItemChangeSet(inventory Inventory, inventoryItemChangeSet Inv
 func deepCopyInventory(originalInventory Inventory) Inventory {
 	newInventory := originalInventory
 
-	newInventory.items = make(map[string]InventoryItem)
-	for key, value := range originalInventory.items {
-		newInventory.items[key] = value
+	newInventory.Items = make(map[string]InventoryItem)
+	for key, value := range originalInventory.Items {
+		newInventory.Items[key] = value
 	}
 
 	return newInventory
 }
 
 func changeCountAndReturnNew(original InventoryItem, newCount int) InventoryItem {
-	original.count = newCount
+	original.ItemCount = newCount
 	return original
 }
 
 // NOTE: This will change inventory
 func changeCountOfInventoryItemWithId(inventory Inventory, inventoryItemId string, newCount int) Inventory {
 	newInventory := inventory
-	newInventory.items[inventoryItemId] = changeCountAndReturnNew(newInventory.items[inventoryItemId], newCount)
+	newInventory.Items[inventoryItemId] = changeCountAndReturnNew(newInventory.Items[inventoryItemId], newCount)
 	return inventory
 }
 
 func (inventoryItem InventoryItem) String() string {
-	return inventoryItem.name
+	return inventoryItem.Name
 }
 
 func (inventoryItem InventoryItem) Count() int {
-	return inventoryItem.count
+	return inventoryItem.ItemCount
 }

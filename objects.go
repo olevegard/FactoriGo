@@ -1,8 +1,8 @@
 package main
 
 type GameState struct {
-	inventory  Inventory
-	production Production
+	CurrentInventory  Inventory
+	CurrentProduction Production
 }
 
 // Interface used for all printable things

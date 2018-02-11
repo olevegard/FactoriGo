@@ -1,4 +1,6 @@
 AutomateIo
 debug.go
 bindata.go
+*.out
+cover.html
 

@@ -1,1 +1,124 @@
-{"CurrentInventory":{"items":{"copper_ore":{"count":0,"name":"Copper ore","id":"copper_ore"},"copper_plates":{"count":0,"name":"Copper plates","id":"copper_plates"},"iron_ore":{"count":0,"name":"Iron ore","id":"iron_ore"},"iron_plates":{"count":0,"name":"Iron plates","id":"iron_plates"}}},"CurrentProduction":{"IronMines":{"UnitCount":0,"TicksRemaining":1,"TicksPerCycle":1,"RecipeChangeSet":[{"InventoryItemId":"iron_ore","ChangeAmount":1}],"ChangeSetForBuildingNew":[{"InventoryItemId":"iron_plates","ChangeAmount":-1},{"InventoryItemId":"copper_plates","ChangeAmount":-2}],"Name":"Iron Mines"},"CopperMines":{"UnitCount":0,"TicksRemaining":1,"TicksPerCycle":1,"RecipeChangeSet":[{"InventoryItemId":"copper_ore","ChangeAmount":1}],"ChangeSetForBuildingNew":[{"InventoryItemId":"iron_plates","ChangeAmount":-1},{"InventoryItemId":"copper_plates","ChangeAmount":-2}],"Name":"Copper Mines"},"IronSmelters":{"UnitCount":0,"TicksRemaining":1,"TicksPerCycle":1,"RecipeChangeSet":[{"InventoryItemId":"iron_plates","ChangeAmount":1},{"InventoryItemId":"copper_ore","ChangeAmount":-1}],"ChangeSetForBuildingNew":[{"InventoryItemId":"iron_plates","ChangeAmount":-1},{"InventoryItemId":"copper_plates","ChangeAmount":-2}],"Name":"Iron Smelters"},"CopperSmelters":{"UnitCount":0,"TicksRemaining":1,"TicksPerCycle":1,"RecipeChangeSet":[{"InventoryItemId":"copper_plates","ChangeAmount":1},{"InventoryItemId":"copper_ore","ChangeAmount":-1}],"ChangeSetForBuildingNew":[{"InventoryItemId":"iron_plates","ChangeAmount":-1},{"InventoryItemId":"copper_plates","ChangeAmount":-2}],"Name":"Copper Smelters"}}}
+{
+    "CurrentInventory": {
+        "items": {
+            "copper_ore": {
+                "count": 0,
+                "name": "Copper ore",
+                "id": "copper_ore"
+            },
+            "copper_plates": {
+                "count": 0,
+                "name": "Copper plates",
+                "id": "copper_plates"
+            },
+            "iron_ore": {
+                "count": 0,
+                "name": "Iron ore",
+                "id": "iron_ore"
+            },
+            "iron_plates": {
+                "count": 0,
+                "name": "Iron plates",
+                "id": "iron_plates"
+            }
+        }
+    },
+    "CurrentProduction": {
+        "IronMines": {
+            "UnitCount": 0,
+            "TicksRemaining": 10,
+            "TicksPerCycle": 10,
+            "RecipeChangeSet": [
+                {
+                    "InventoryItemId": "iron_ore",
+                    "ChangeAmount": 1
+                }
+            ],
+            "ChangeSetForBuildingNew": [
+                {
+                    "InventoryItemId": "iron_plates",
+                    "ChangeAmount": -1
+                },
+                {
+                    "InventoryItemId": "copper_plates",
+                    "ChangeAmount": -2
+                }
+            ],
+            "Name": "Iron Mines"
+        },
+        "CopperMines": {
+            "UnitCount": 0,
+            "TicksRemaining": 10,
+            "TicksPerCycle": 10,
+            "RecipeChangeSet": [
+                {
+                    "InventoryItemId": "copper_ore",
+                    "ChangeAmount": 1
+                }
+            ],
+            "ChangeSetForBuildingNew": [
+                {
+                    "InventoryItemId": "iron_plates",
+                    "ChangeAmount": -1
+                },
+                {
+                    "InventoryItemId": "copper_plates",
+                    "ChangeAmount": -2
+                }
+            ],
+            "Name": "Copper Mines"
+        },
+        "IronSmelters": {
+            "UnitCount": 0,
+            "TicksRemaining": 50,
+            "TicksPerCycle": 50,
+            "RecipeChangeSet": [
+                {
+                    "InventoryItemId": "iron_plates",
+                    "ChangeAmount": 1
+                },
+                {
+                    "InventoryItemId": "iron_ore",
+                    "ChangeAmount": -1
+                }
+            ],
+            "ChangeSetForBuildingNew": [
+                {
+                    "InventoryItemId": "iron_plates",
+                    "ChangeAmount": -1
+                },
+                {
+                    "InventoryItemId": "copper_plates",
+                    "ChangeAmount": -2
+                }
+            ],
+            "Name": "Iron Smelters"
+        },
+        "CopperSmelters": {
+            "UnitCount": 0,
+            "TicksRemaining": 100,
+            "TicksPerCycle": 100,
+            "RecipeChangeSet": [
+                {
+                    "InventoryItemId": "copper_plates",
+                    "ChangeAmount": 1
+                },
+                {
+                    "InventoryItemId": "copper_ore",
+                    "ChangeAmount": -1
+                }
+            ],
+            "ChangeSetForBuildingNew": [
+                {
+                    "InventoryItemId": "iron_plates",
+                    "ChangeAmount": -1
+                },
+                {
+                    "InventoryItemId": "copper_plates",
+                    "ChangeAmount": -2
+                }
+            ],
+            "Name": "Copper Smelters"
+        }
+    }
+}

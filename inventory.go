@@ -85,3 +85,11 @@ func changeCountOfInventoryItemWithId(inventory Inventory, inventoryItemId strin
 	newInventory.items[inventoryItemId] = changeCountAndReturnNew(newInventory.items[inventoryItemId], newCount)
 	return inventory
 }
+
+func (inventoryItem InventoryItem) String() string {
+	return inventoryItem.name
+}
+
+func (inventoryItem InventoryItem) Count() int {
+	return inventoryItem.count
+}

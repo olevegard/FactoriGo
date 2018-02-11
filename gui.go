@@ -99,17 +99,21 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 	}
 
 	addLine(ctx, inventory.items["iron_ore"], func() {
-		inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", 1))
+		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", 1))
 	})
 
 	addLine(ctx, inventory.items["copper_ore"], func() {
-		inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", 1))
+		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", 1))
 	})
 
 	addLine(ctx, inventory.items["iron_plates"], func() {
+		// This should be disabled, but is left as a debug features
+		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_plates", 1))
 	})
 
 	addLine(ctx, inventory.items["copper_plates"], func() {
+		// This should be disabled, but is left as a debug features
+		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_plates", 1))
 	})
 
 	nk.NkEnd(ctx)
@@ -117,33 +121,33 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 	return inventory
 }
 
-func createProduction(ctx *nk.Context, production Production) Production {
+func createProduction(ctx *nk.Context, production Production, inventory Inventory) GameState {
 	bounds := nk.NkRect(240, 50, 250, 150)
 	update := nk.NkBegin(ctx, "Production", bounds,
 		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowMinimizable|nk.WindowTitle)
 
 	if update == 0 {
-		return production
+		return GameState{inventory, production}
 	}
 
 	addLine(ctx, production.iron_mines, func() {
-		production.iron_mines.count++
+		production.iron_mines, inventory = BuilNewProductionUnit(production.iron_mines, inventory)
 	})
 
 	addLine(ctx, production.copper_mines, func() {
-		production.copper_mines.count++
+		production.copper_mines, inventory = BuilNewProductionUnit(production.copper_mines, inventory)
 	})
 
 	addLine(ctx, production.iron_smelters, func() {
-		production.iron_smelters.count++
+		production.iron_smelters, inventory = BuilNewProductionUnit(production.iron_smelters, inventory)
 	})
 
 	addLine(ctx, production.copper_smelters, func() {
-		production.copper_smelters.count++
+		production.copper_smelters, inventory = BuilNewProductionUnit(production.copper_smelters, inventory)
 	})
 
 	nk.NkEnd(ctx)
-	return production
+	return GameState{inventory, production}
 }
 
 func addLine(ctx *nk.Context, printable Printable, f func()) {
@@ -168,7 +172,7 @@ func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
 	state.gameState = UpdateInventory(state.gameState)
 
-	state.gameState.production = createProduction(ctx, state.gameState.production)
+	state.gameState = createProduction(ctx, state.gameState.production, state.gameState.inventory)
 	state.gameState.inventory = createInventory(ctx, state.gameState.inventory)
 
 	// Render

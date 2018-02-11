@@ -210,3 +210,13 @@ func TestThatTestDeepCopyInventoryItemActuallyCopiesMap(t *testing.T) {
 	assert.Equal(t, 0, inventory.items["iron_ore"].count)
 	assert.Equal(t, 1, inventory.items["copper_ore"].count)
 }
+
+func TestThatInventoryItemHasStringFunc(t *testing.T) {
+	inventoryItem := InventoryItem{0, "Iron Ore", "iron_ore"}
+	assert.Equal(t, "Iron Ore", inventoryItem.String())
+}
+
+func TestThatInventoryItemHasCountFunc(t *testing.T) {
+	inventoryItem := InventoryItem{1, "Iron Ore", "iron_ore"}
+	assert.Equal(t, 1, inventoryItem.Count())
+}

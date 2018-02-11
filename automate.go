@@ -1,62 +1,32 @@
 package main
 
-func DoRecipdeIfTimedOut(productionUnit ProductionUnit, inventory Inventory) (Inventory, ProductionUnit) {
-	newProductionUnit, wasTimedOut := productionUnit.MaybeResetTick()
-
-	if wasTimedOut {
-		inventory = productionUnit.doRecipe(inventory, productionUnit.count)
-	}
-
-	return inventory, newProductionUnit
-}
-
 func UpdateInventory(gameState GameState) GameState {
-	gameState.inventory, gameState.production.iron_mines =
-		DoRecipdeIfTimedOut(gameState.production.iron_mines, gameState.inventory)
+	gameState.production.iron_mines, gameState.inventory = CreateNewBatchIfTimeBecomes0(gameState.production.iron_mines, gameState.inventory)
+	gameState.production.copper_mines, gameState.inventory = CreateNewBatchIfTimeBecomes0(gameState.production.copper_mines, gameState.inventory)
 
-	gameState.inventory, gameState.production.copper_mines =
-		DoRecipdeIfTimedOut(gameState.production.copper_mines, gameState.inventory)
-
-	gameState.inventory, gameState.production.iron_smelters =
-		DoRecipdeIfTimedOut(gameState.production.iron_smelters, gameState.inventory)
-
-	gameState.inventory, gameState.production.copper_smelters =
-		DoRecipdeIfTimedOut(gameState.production.copper_smelters, gameState.inventory)
-
+	gameState.production.iron_smelters, gameState.inventory = CreateNewBatchIfTimeBecomes0(gameState.production.iron_smelters, gameState.inventory)
+	gameState.production.copper_smelters, gameState.inventory = CreateNewBatchIfTimeBecomes0(gameState.production.copper_smelters, gameState.inventory)
 	return gameState
 }
 
 func MakeDefaultGameState() GameState {
 	production := Production{}
 
-	production.iron_mines = MakeProductionUnit(1,
-		func(inventory Inventory, count int) Inventory {
-			return ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", count))
-		}, "Iron mines")
+	createNewChangeSet := InventoryItemChangeSet{}
+	createNewChangeSet = append(createNewChangeSet, NewInventoryChange("iron_plates", -1))
+	createNewChangeSet = append(createNewChangeSet, NewInventoryChange("copper_plates", -2))
 
-	production.copper_mines = MakeProductionUnit(1,
-		func(inventory Inventory, count int) Inventory {
+	recipeChangeSet := InventoryItemChangeSet{NewInventoryChange("iron_ore", 1)}
+	production.iron_mines = MakeProductionUnit(1, "Iron Mines", recipeChangeSet, createNewChangeSet)
 
-			return ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", count))
-		}, "Copper mines")
+	recipeChangeSet = InventoryItemChangeSet{NewInventoryChange("copper_ore", 1)}
+	production.copper_mines = MakeProductionUnit(1, "Copper Mines", recipeChangeSet, createNewChangeSet)
 
-	production.iron_smelters = MakeProductionUnit(2,
-		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.items["iron_ore"].count, count)
-			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", newItems*-1))
+	recipeChangeSet = InventoryItemChangeSet{NewInventoryChange("iron_plates", 1)}
+	production.iron_smelters = MakeProductionUnit(1, "Iron Smelters", recipeChangeSet, createNewChangeSet)
 
-			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_plates", newItems))
-			return inventory
-		}, "Iron furnaces")
-
-	production.copper_smelters = MakeProductionUnit(2,
-		func(inventory Inventory, count int) Inventory {
-			newItems := min(inventory.items["copper_ore"].count, count)
-			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", newItems*-1))
-
-			inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_plates", newItems))
-			return inventory
-		}, "Copper furnaces")
+	recipeChangeSet = InventoryItemChangeSet{NewInventoryChange("copper_plates", 1)}
+	production.copper_smelters = MakeProductionUnit(1, "Copper Smelters", recipeChangeSet, createNewChangeSet)
 
 	return GameState{MakeDefaultInventory(), production}
 }

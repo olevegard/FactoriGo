@@ -79,6 +79,10 @@
                     {
                         "InventoryItemId": "iron_ore",
                         "ChangeAmount": -1
+                    },
+					{
+                        "InventoryItemId": "coal",
+                        "ChangeAmount": -1
                     }
                 ],
                 "ChangeSetForBuildingNew": [
@@ -126,6 +130,10 @@
                     },
                     {
                         "InventoryItemId": "copper_ore",
+                        "ChangeAmount": -1
+                    },
+                    {
+                        "InventoryItemId": "coal",
                         "ChangeAmount": -1
                     }
                 ],

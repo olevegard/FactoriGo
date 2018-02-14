@@ -101,23 +101,13 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	addLine(ctx, inventory.Items["iron_ore"], func() {
-		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_ore", 1))
-	})
+	keys := []string{"iron_ore", "copper_ore", "iron_plates", "copper_plates"}
 
-	addLine(ctx, inventory.Items["copper_ore"], func() {
-		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_ore", 1))
-	})
-
-	addLine(ctx, inventory.Items["iron_plates"], func() {
-		// This should be disabled, but is left as a debug features
-		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("iron_plates", 1))
-	})
-
-	addLine(ctx, inventory.Items["copper_plates"], func() {
-		// This should be disabled, but is left as a debug features
-		_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange("copper_plates", 1))
-	})
+	for _, key := range keys {
+		addLine(ctx, inventory.Items[key], func() {
+			_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange(key, 1))
+		})
+	}
 
 	nk.NkEnd(ctx)
 

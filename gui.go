@@ -133,21 +133,11 @@ func createProduction(ctx *nk.Context, production Production, inventory Inventor
 		return GameState{inventory, production}
 	}
 
-	addLine(ctx, production.IronMines, func() {
-		production.IronMines, inventory = BuilNewProductionUnit(production.IronMines, inventory)
-	})
-
-	addLine(ctx, production.CopperMines, func() {
-		production.CopperMines, inventory = BuilNewProductionUnit(production.CopperMines, inventory)
-	})
-
-	addLine(ctx, production.IronSmelters, func() {
-		production.IronSmelters, inventory = BuilNewProductionUnit(production.IronSmelters, inventory)
-	})
-
-	addLine(ctx, production.CopperSmelters, func() {
-		production.CopperSmelters, inventory = BuilNewProductionUnit(production.CopperSmelters, inventory)
-	})
+	for index, _ := range production.ProductionUnits {
+		addLine(ctx, production.ProductionUnits[index], func() {
+			production.ProductionUnits[index], inventory = BuilNewProductionUnit(production.ProductionUnits[index], inventory)
+		})
+	}
 
 	nk.NkEnd(ctx)
 	return GameState{inventory, production}

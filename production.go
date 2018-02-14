@@ -1,13 +1,7 @@
 package main
 
 type Production struct {
-	// Harvested
-	IronMines   ProductionUnit
-	CopperMines ProductionUnit
-
-	// Smelted
-	IronSmelters   ProductionUnit
-	CopperSmelters ProductionUnit
+	ProductionUnits []ProductionUnit
 }
 
 // Used to update Inventory for a recipe

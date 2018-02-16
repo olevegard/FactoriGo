@@ -11,9 +11,7 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 - Inventory system with a map of inventory items with count and title
 
 ## Todo:
-- Production buildings should also be a map or array and not hard-coded. Should also be part of json
 - Miners should be harder to make, maybe requring the user to fist get stone -> make stone furnace -> get iron ore -> get coal -> make iron plates form iron ore -> build miners like in factorio
-- Mining / smelting units should require coal, which can also be automated 
 - Upgrades
 - New materials
 - GUI should better represent what can and can't be done. Ie. should not be able to click to make iron plates

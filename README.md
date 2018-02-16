@@ -11,27 +11,33 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 - Inventory system with a map of inventory items with count and title
 
 ## Todo:
+- Make and implement a better GUI
 - Miners should be harder to make, maybe requring the user to fist get stone -> make stone furnace -> get iron ore -> get coal -> make iron plates form iron ore -> build miners like in factorio
 - Upgrades
 - New materials
-- GUI should better represent what can and can't be done. Ie. should not be able to click to make iron plates
+- Produce robotic warriors
+- Robotic warriors fight enemies and brings back loot needed for research
+- After a while ( or after some trigger like the player making warriros ) enemies start attacking
+- Peaceful mode, where enemies never attack
+- All aspects of warriors can be upgraded
+- Can make new types of warriors ( possibly with different strenghts and weakneses)
+- Different robots requires different materials
 - Make game run on Android
 - Make game run on iOS
 
 ## Investage ideas
 - Making an "advanced mode" where buildings need to be conenected ie. iron miners need to be connected to smelters.
 - /\ connections should be possbile to upgrade
-- Adding enemies ( what would the enemies do? would it be fun? )
-- Adding an end goal ( creating autonomous drones to defeat enemies? colonize planet? )
+- End game idea : colonize a new planet with more materials but also more powerful enemies. Player keep inventory / buildings?
 
 ## Other :
 - System for generating coverage reports. Can use ` go test -coverprofile cover.out -tags test && go tool cover -html=cover.out -o cover.html
 `, but should be in a script
 
 ## Development guidelines
-- Functions should have no side effects ( take in an argument, return a copy, don't change the supplied arguments )
+- Functions should have no side effects ( take in an argument, return a copy, don't change the supplied arguments when pointer types are involved ( ie maps )
 - Update logic should be entirely separate from game logic
 - Code should follow go idioms as far as possible
 - Update logic should have 100% test coverage if possible
 - Update logic should be developed using a test driven approach
-- Should have system tests for all platforms coverin as much as possible.
+- Should have system tests for all platforms covering as much as possible.

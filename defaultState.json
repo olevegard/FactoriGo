@@ -13,6 +13,18 @@
                 "id": "copper_ore",
                 "can_be_made_manually": true
             },
+            "stone":{
+                "count": 0,
+                "name": "Stone",
+                "id": "stone",
+                "can_be_made_manually": true
+            },
+            "wood":{
+                "count": 0,
+                "name": "Wood",
+                "id": "wood",
+                "can_be_made_manually": true
+            },
             "copper_plates": {
                 "count": 0,
                 "name": "Copper plates",
@@ -30,12 +42,24 @@
                 "name": "Iron plates",
                 "id": "iron_plates",
                 "can_be_made_manually": false
+            },
+            "copper_wire": {
+                "count": 0,
+                "name": "Copper Wires",
+                "id": "copper_wire",
+                "can_be_made_manually": false
+            },
+            "circuit_board": {
+                "count": 0,
+                "name": "Circuit Boards",
+                "id": "circuit_board",
+                "can_be_made_manually": false
             }
         }
     },
     "CurrentProduction": {
         "ProductionUnits": [
-{
+            {
                 "UnitCount": 0,
                 "TicksRemaining": 10,
                 "TicksPerCycle": 10,
@@ -46,7 +70,14 @@
                     }
                 ],
                 "ChangeSetForBuildingNew": [
-               
+                    {
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -2
+                    },
+                    {
+                        "InventoryItemId": "wood",
+                        "ChangeAmount": -2
+                    }
                 ],
                 "Name": "Coal Mines"
             },
@@ -62,15 +93,37 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
-                        "ChangeAmount": -1
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -2
                     },
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "wood",
                         "ChangeAmount": -2
                     }
                 ],
                 "Name": "Iron Mines"
+            },
+            {
+                "UnitCount": 0,
+                "TicksRemaining": 10,
+                "TicksPerCycle": 10,
+                "RecipeChangeSet": [
+                    {
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": 1
+                    }
+                ],
+                "ChangeSetForBuildingNew": [
+                    {
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -2
+                    },
+                    {
+                        "InventoryItemId": "wood",
+                        "ChangeAmount": -2
+                    }
+                ],
+                "Name": "Stone Mines"
             },
             {
                 "UnitCount": 0,
@@ -92,11 +145,11 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
-                        "ChangeAmount": -1
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -2
                     },
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "wood",
                         "ChangeAmount": -2
                     }
                 ],
@@ -114,12 +167,8 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
-                        "ChangeAmount": -1
-                    },
-                    {
-                        "InventoryItemId": "copper_plates",
-                        "ChangeAmount": -2
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -4
                     }
                 ],
                 "Name": "Copper Mines"
@@ -144,12 +193,8 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
-                        "ChangeAmount": -1
-                    },
-                    {
-                        "InventoryItemId": "copper_plates",
-                        "ChangeAmount": -2
+                        "InventoryItemId": "stone",
+                        "ChangeAmount": -4
                     }
                 ],
                 "Name": "Copper Smelters"

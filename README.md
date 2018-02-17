@@ -12,6 +12,8 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 
 ## Todo:
 - Make and implement a better GUI
+- Small windows for each production unit. 
+- - These should show if they are getting what they need
 - Miners should be harder to make, maybe requring the user to fist get stone -> make stone furnace -> get iron ore -> get coal -> make iron plates form iron ore -> build miners like in factorio
 - Upgrades
 - New materials
@@ -27,7 +29,8 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 
 ## Investage ideas
 - Making an "advanced mode" where buildings need to be conenected ie. iron miners need to be connected to smelters.
-- /\ connections should be possbile to upgrade
+- - connections should be possbile to upgrade
+- - Find a way to split this up. Maybe a button to display a group of production units and the connections between them.
 - End game idea : colonize a new planet with more materials but also more powerful enemies. Player keep inventory / buildings?
 
 ## Other :

@@ -92,6 +92,7 @@ func main() {
 				close(exitC)
 				continue
 			}
+			state.ticksSinceStart++
 			glfw.PollEvents()
 			gfxMain(win, ctx, state)
 		}
@@ -118,7 +119,7 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
 	{
-		nk.NkLabel(ctx, fmt.Sprintf("Time : %d", productionUnit.TicksPerCycle), nk.TextLeft)
+		nk.NkLabel(ctx, fmt.Sprintf("Time Left : %d", productionUnit.TicksRemaining), nk.TextLeft)
 	}
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
@@ -202,7 +203,9 @@ func addLine(ctx *nk.Context, printable Printable, info func(), createNew func()
 
 func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
-	state.gameState = UpdateInventory(state.gameState)
+	if (state.ticksSinceStart % 20) == 0 {
+		state.gameState = UpdateInventory(state.gameState)
+	}
 	state.gameState.CurrentInventory = createInventory(ctx, state.gameState.CurrentInventory)
 
 	for _, window := range state.windows {
@@ -223,11 +226,12 @@ func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 }
 
 type State struct {
-	bgColor   nk.Color
-	prop      int32
-	gameState GameState
-	smallFont *nk.Font
-	bigFont   *nk.Font
+	bgColor         nk.Color
+	prop            int32
+	gameState       GameState
+	smallFont       *nk.Font
+	bigFont         *nk.Font
+	ticksSinceStart uint64
 
 	windows map[string]Window `json:"items"`
 }

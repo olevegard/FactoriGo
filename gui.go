@@ -73,6 +73,14 @@ func main() {
 	state.gameState = ReadDefaultGameState()
 
 	fpsTicker := time.NewTicker(time.Second / 100)
+
+	state.windows = map[string]Window{}
+
+	for index, _ := range state.gameState.CurrentProduction.ProductionUnits {
+		key, w := createProductionBox(ctx, state, index)
+		state.windows[key] = w
+	}
+
 	for {
 		select {
 		case <-exitC:
@@ -92,8 +100,57 @@ func main() {
 	}
 }
 
+func createProductionBox(ctx *nk.Context, state *State, index int) (string, Window) {
+	productionUnit := state.gameState.CurrentProduction.ProductionUnits[index]
+	t := func() Production {
+		bounds := nk.NkRect(winWidth-150, float32(80*index), 150, 80)
+		update := nk.NkBegin(ctx, fmt.Sprintf("%s : %d", productionUnit.Name, productionUnit.Count()), bounds,
+			nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowClosable|nk.WindowTitle)
+
+		if update > 0 {
+			/*
+				nk.NkLayoutRowDynamic(ctx, 20, 1)
+				{
+					nk.NkLabel(ctx, fmt.Sprintf("Count : %d", productionUnit.Count()), nk.TextLeft)
+				}
+
+					nk.NkLayoutRowDynamic(ctx, 20, 1)
+					{
+						nk.NkLabel(ctx, "Generates : 10 x IO", nk.TextLeft)
+					}
+
+					nk.NkLayoutRowDynamic(ctx, 20, 1)
+					{
+						nk.NkLabel(ctx, fmt.Sprintf("Time : %d", productionUnit.TicksPerCycle), nk.TextLeft)
+					}
+			*/
+
+			nk.NkLayoutRowDynamic(ctx, 20, 1)
+			{
+				if nk.NkButtonLabel(ctx, "Build") > 0 {
+					state.gameState.CurrentProduction.ProductionUnits[index], state.gameState.CurrentInventory = BuilNewProductionUnit(productionUnit, state.gameState.CurrentInventory)
+				}
+			}
+			/*
+				nk.NkLayoutRowDynamic(ctx, 20, 1)
+				{
+					if nk.NkButtonLabel(ctx, "Close") > 0 {
+
+						oldWindow := Window{state.windows[productionUnit.Name].Update, false}
+						state.windows[productionUnit.Name] = oldWindow
+					}
+				}
+			*/
+		}
+		nk.NkEnd(ctx)
+
+		return state.gameState.CurrentProduction
+	}
+	return productionUnit.Name, Window{t, true}
+}
+
 func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
-	bounds := nk.NkRect(20, 50, 200, 150)
+	bounds := nk.NkRect(0, 0, 240, 350)
 	update := nk.NkBegin(ctx, "Inventory", bounds,
 		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowMinimizable|nk.WindowTitle)
 
@@ -101,12 +158,16 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	keys := []string{"coal", "iron_ore", "copper_ore", "iron_plates", "copper_plates"}
+	keys := []string{"stone", "wood", "coal", "iron_ore", "copper_ore", "iron_plates", "copper_plates", "copper_wire", "circuit_board"}
 
 	for _, key := range keys {
+
 		addLine(ctx, inventory.Items[key], func() {
-			_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange(key, 1))
-		})
+
+		},
+			func() {
+				_, inventory = ApplyInventoryItemChange(inventory, NewInventoryChange(key, 1))
+			}, inventory.Items[key].CanBeMadeManually)
 	}
 
 	nk.NkEnd(ctx)
@@ -114,37 +175,25 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 	return inventory
 }
 
-func createProduction(ctx *nk.Context, production Production, inventory Inventory) GameState {
-	bounds := nk.NkRect(240, 50, 250, 150)
-	update := nk.NkBegin(ctx, "Production", bounds,
-		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowMinimizable|nk.WindowTitle)
-
-	if update == 0 {
-		return GameState{inventory, production}
-	}
-
-	for index, _ := range production.ProductionUnits {
-		addLine(ctx, production.ProductionUnits[index], func() {
-			production.ProductionUnits[index], inventory = BuilNewProductionUnit(production.ProductionUnits[index], inventory)
-		})
-	}
-
-	nk.NkEnd(ctx)
-	return GameState{inventory, production}
-}
-
-func addLine(ctx *nk.Context, printable Printable, f func()) {
-	nk.NkLayoutRowBegin(ctx, nk.LayoutDynamic, 20, 3)
+func addLine(ctx *nk.Context, printable Printable, info func(), createNew func(), actionable bool) {
+	nk.NkLayoutRowBegin(ctx, nk.LayoutDynamic, 20, 4)
 	{
-		nk.NkLayoutRowPush(ctx, 100)
+		nk.NkLayoutRowPush(ctx, 80)
 		nk.NkLabel(ctx, fmt.Sprintf("%s :", printable), nk.TextLeft)
 
 		nk.NkLayoutRowPush(ctx, 30)
 		nk.NkLabel(ctx, strconv.Itoa(printable.Count()), nk.TextRight)
 
+		/*
+			nk.NkLayoutRowPush(ctx, 30)
+			if nk.NkButtonLabel(ctx, "info") > 0 {
+				info()
+			}
+		*/
+
 		nk.NkLayoutRowPush(ctx, 30)
-		if nk.NkButtonLabel(ctx, "+") > 0 {
-			f()
+		if actionable && nk.NkButtonLabel(ctx, "+") > 0 {
+			createNew()
 		}
 	}
 
@@ -154,10 +203,13 @@ func addLine(ctx *nk.Context, printable Printable, f func()) {
 func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
 	state.gameState = UpdateInventory(state.gameState)
-
-	state.gameState = createProduction(ctx, state.gameState.CurrentProduction, state.gameState.CurrentInventory)
 	state.gameState.CurrentInventory = createInventory(ctx, state.gameState.CurrentInventory)
 
+	for _, window := range state.windows {
+		if window.IsVisible {
+			state.gameState.CurrentProduction = window.Update()
+		}
+	}
 	// Render
 	bg := make([]float32, 4)
 	nk.NkColorFv(bg, state.bgColor)
@@ -173,6 +225,13 @@ type State struct {
 	bgColor   nk.Color
 	prop      int32
 	gameState GameState
+
+	windows map[string]Window `json:"items"`
+}
+
+type Window struct {
+	Update    func() Production
+	IsVisible bool
 }
 
 func onError(code int32, msg string) {

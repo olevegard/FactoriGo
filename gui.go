@@ -17,8 +17,8 @@ import (
 
 // https://github.com/golang-ui/nuklear
 const (
-	winWidth  = 600
-	winHeight = 500
+	winWidth  = 360
+	winHeight = 640
 
 	maxVertexBuffer  = 512 * 1024
 	maxElementBuffer = 128 * 1024
@@ -54,7 +54,7 @@ func main() {
 
 	atlas := nk.NewFontAtlas()
 	nk.NkFontStashBegin(&atlas)
-	sansFont := nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 16, nil)
+	sansFont := nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 14, nil)
 	nk.NkFontStashEnd()
 	if sansFont != nil {
 		nk.NkStyleSetFont(ctx, sansFont.Handle())

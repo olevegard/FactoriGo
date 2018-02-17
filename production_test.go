@@ -26,8 +26,8 @@ func TestThatTestThatWeCanGetInventoryItemSucceedsWhenInventoryHasItemsNeeded(t 
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{4, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{4, "Copper Ore", "copper_ore", false})
 
 	newProductionUnit, newInventory := BuilNewProductionUnit(productionUnit, inventory)
 	assert.Equal(t, 1, newProductionUnit.UnitCount)
@@ -60,8 +60,8 @@ func TestThatCreateNewProductionBatchCreatesCorrectBatch(t *testing.T) {
 	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
@@ -79,8 +79,8 @@ func TestThatCreateNewProductionBatchReturnsUpdatedProducionUnit(t *testing.T) {
 	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	newProductionUnit, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
@@ -107,8 +107,8 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfCountIs0(t *testing.T) {
 	productionUnit.UnitCount = 0
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
@@ -126,8 +126,8 @@ func TestThatCreateNewProductionBatchDoesntChangeBatchIfNotTimedOut(t *testing.T
 	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
@@ -145,8 +145,8 @@ func TestThatCreateNewProductionBatchCanCreateManyNewItems(t *testing.T) {
 	productionUnit.UnitCount = 1000
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	_, newInventory := CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 
@@ -191,8 +191,8 @@ func TestThatTestThatWeCanGetInventoryItemFailsWhenInventoryDoesntHaveItemsNeede
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Copper Ore", "copper_ore", false})
 
 	newProductionUnit, newInventory := BuilNewProductionUnit(productionUnit, inventory)
 	assert.Equal(t, 0, newProductionUnit.UnitCount)
@@ -211,7 +211,7 @@ func TestThatWeCanCheckThatWeCanBuilProductionUnit(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron Ore", "iron_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron Ore", "iron_ore", false})
 
 	assert.True(t, CanBuilNewProductionUnit(productionUnit, inventory))
 }
@@ -222,7 +222,7 @@ func TestThatWeCanCheckThatWeCantBuilProductionUnit(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{0, "Iron Ore", "iron_ore", false})
 
 	assert.False(t, CanBuilNewProductionUnit(productionUnit, inventory))
 }
@@ -234,7 +234,7 @@ func TestThatWeCanBuildNewProductionUnitDoesntChangeInv(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron Ore", "iron_ore"})
+	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron Ore", "iron_ore", false})
 
 	assert.True(t, CanBuilNewProductionUnit(productionUnit, inventory))
 	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)

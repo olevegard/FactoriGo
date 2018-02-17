@@ -7,9 +7,10 @@ type Inventory struct {
 }
 
 type InventoryItem struct {
-	ItemCount int    `json:"count"`
-	Name      string `json:"name"`
-	Id        string `json:"id,id"`
+	ItemCount         int    `json:"count"`
+	Name              string `json:"name"`
+	Id                string `json:"id,id"`
+	CanBeMadeManually bool   `json:"can_be_made_manually"`
 }
 
 func NewInventory() Inventory {

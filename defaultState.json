@@ -1,30 +1,35 @@
 {
     "CurrentInventory": {
         "items": {
-	    "coal": {
+	        "coal": {
                 "count": 0,
                 "name": "Coal",
-                "id": "coal"
+                "id": "coal",
+                "can_be_made_manually": true
             },
             "copper_ore": {
                 "count": 0,
                 "name": "Copper ore",
-                "id": "copper_ore"
+                "id": "copper_ore",
+                "can_be_made_manually": true
             },
             "copper_plates": {
                 "count": 0,
                 "name": "Copper plates",
-                "id": "copper_plates"
+                "id": "copper_plates",
+                "can_be_made_manually": false
             },
             "iron_ore": {
                 "count": 0,
                 "name": "Iron ore",
-                "id": "iron_ore"
+                "id": "iron_ore",
+                "can_be_made_manually": true
             },
             "iron_plates": {
                 "count": 0,
                 "name": "Iron plates",
-                "id": "iron_plates"
+                "id": "iron_plates",
+                "can_be_made_manually": false
             }
         }
     },

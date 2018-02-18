@@ -64,6 +64,20 @@ func MultiplyChageSetForProduction(changeSet InventoryItemChangeSet, factor int)
 	return newChangeSet
 }
 
+func GetMaxFactorForProductionUnit(productionUnit ProductionUnit, inventory Inventory) int {
+	currentMaxFactor := productionUnit.UnitCount
+
+	for _, itemChange := range productionUnit.RecipeChangeSet {
+		if itemChange.ChangeAmount < 0 {
+			hasItems := inventory.Items[itemChange.InventoryItemId].ItemCount
+			canMakeItems := int(hasItems / (itemChange.ChangeAmount * -1))
+			currentMaxFactor = min(canMakeItems, currentMaxFactor)
+		}
+	}
+
+	return currentMaxFactor
+}
+
 func CreateNewBatchIfTimeBecomes0(productionUnit ProductionUnit, inventory Inventory) (ProductionUnit, Inventory) {
 	shouldBuildNew, newProductionUnit := UpdateProductionUnitTimer(productionUnit)
 
@@ -71,7 +85,9 @@ func CreateNewBatchIfTimeBecomes0(productionUnit ProductionUnit, inventory Inven
 		return newProductionUnit, inventory
 	}
 
-	productionChangeSet := MultiplyChageSetForProduction(productionUnit.RecipeChangeSet, productionUnit.UnitCount)
+	maxUnitProduction := GetMaxFactorForProductionUnit(newProductionUnit, inventory)
+	productionChangeSet := MultiplyChageSetForProduction(
+		productionUnit.RecipeChangeSet, maxUnitProduction)
 	_, newInventory := ApplyInventoryItemChangeSet(inventory, productionChangeSet)
 	return newProductionUnit, newInventory
 }

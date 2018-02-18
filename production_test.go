@@ -323,13 +323,138 @@ func TestThatResetableIntResetsDoesntChangeOriginal(t *testing.T) {
 	assert.Equal(t, 2, int(resetAble))
 }
 
-func TestThatPRoductionUnitHasStringFunc(t *testing.T) {
+func TestThatProductionUnitHasStringFunc(t *testing.T) {
 	produciotUnit := MakeNewProductionUnitWithNoChangeSet(0, "Iron Mine")
 	assert.Equal(t, "Iron Mine", produciotUnit.String())
 }
 
-func TestThatPRoductionUnitHasCountFunc(t *testing.T) {
+func TestThatProductionUnitHasCountFunc(t *testing.T) {
 	produciotUnit := MakeNewProductionUnitWithNoChangeSet(1, "Iron Mine")
 	produciotUnit.UnitCount = 1
 	assert.Equal(t, 1, produciotUnit.Count())
+}
+
+func TestThatWeCanCreatePartial(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 2
+	productionUnit.TicksRemaining = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Coal", "coal", false})
+
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+	assert.Equal(t, 1, inventory.Items["iron_plates"].ItemCount)
+	assert.Equal(t, 2, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 1, inventory.Items["coal"].ItemCount)
+}
+
+func TestThatWeCanGetMaxFactorIfNotAllCanBeMade(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 2
+	productionUnit.TicksRemaining = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Coal", "coal", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+	assert.Equal(t, 1, factor)
+}
+
+func TestThatWeCanGetMaxFactorIfAllCanBeMade(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 2
+	productionUnit.TicksRemaining = 0
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{2, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{4, "Coal", "coal", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+	assert.Equal(t, 2, factor)
+}
+
+func TestThatWeCanGetMaxFactorIfNothingCanBeMade(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -10))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 2
+	productionUnit.TicksRemaining = 0
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{2, "Coal", "coal", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+	assert.Equal(t, 0, factor)
+}
+
+func TestThatWeCanGetMaxFactorCantExceedUnits(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 2
+	productionUnit.TicksRemaining = 0
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3000, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{2000, "Coal", "coal", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+	assert.Equal(t, 2, factor)
+}
+
+func TestThatMaxFactorIs0IfNoUnits(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
+	changeSet = append(changeSet, NewInventoryChange("coal", -2))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 0
+	productionUnit.TicksRemaining = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3000, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{2000, "Coal", "coal", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+	assert.Equal(t, 0, factor)
+}
+
+func TestThatMaxFactorIsCountOfUnitsIfReceipeDontNeedItems(t *testing.T) {
+	changeSet := InventoryItemChangeSet{}
+	changeSet = append(changeSet, NewInventoryChange("iron_ore", 1))
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
+	productionUnit.UnitCount = 1000
+	productionUnit.TicksRemaining = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, InventoryItem{3000, "Iron Ore", "iron_ore", false})
+
+	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
+
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+	assert.Equal(t, 1000, factor)
 }

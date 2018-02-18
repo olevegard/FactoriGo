@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/go-gl/gl/v3.2-core/gl"
-	"github.com/go-gl/glfw/v3.2/glfw"
-	"github.com/golang-ui/nuklear/nk"
+	"github.com/olevegard/nuklear/nk"
+	"github.com/veandco/go-sdl2/sdl"
 	"github.com/xlab/closer"
 )
 
@@ -27,30 +27,31 @@ const (
 func init() {
 	runtime.LockOSThread()
 }
-
 func main() {
-	if err := glfw.Init(); err != nil {
-		closer.Fatalln(err)
-	}
-	glfw.WindowHint(glfw.ContextVersionMajor, 3)
-	glfw.WindowHint(glfw.ContextVersionMinor, 2)
-	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	win, err := glfw.CreateWindow(winWidth, winHeight, "FactoriGo Prototype", nil, nil)
+
+	var err error
+	sdl.Init(sdl.INIT_EVERYTHING)
+
+	win, err := sdl.CreateWindow("Nuklear Demo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, winWidth, winHeight, sdl.WINDOW_OPENGL)
 	if err != nil {
 		closer.Fatalln(err)
 	}
-	win.MakeContextCurrent()
+	defer win.Destroy()
+
+	context, err := sdl.GLCreateContext(win)
+	if err != nil {
+		closer.Fatalln(err)
+	}
 
 	width, height := win.GetSize()
-	log.Printf("glfw: created window %dx%d", width, height)
+	log.Printf("SDL2: created window %dx%d", width, height)
 
 	if err := gl.Init(); err != nil {
 		closer.Fatalln("opengl: init failed:", err)
 	}
 	gl.Viewport(0, 0, int32(width), int32(height))
 
-	ctx := nk.NkPlatformInit(win, nk.PlatformInstallCallbacks)
+	ctx := nk.NkPlatformInit(win, context, nk.PlatformInstallCallbacks)
 
 	state := &State{
 		bgColor: nk.NkRgba(28, 48, 62, 255),
@@ -58,14 +59,14 @@ func main() {
 
 	atlas := nk.NewFontAtlas()
 	nk.NkFontStashBegin(&atlas)
-	state.smallFont = nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 14, nil)
-	state.bigFont = nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 20, nil)
+	state.smallFont = nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 12, nil)
+	state.bigFont = nk.NkFontAtlasAddFromBytes(atlas, MustAsset("assets/FreeSans.ttf"), 16, nil)
 	nk.NkFontStashEnd()
-
 	if state.smallFont != nil {
 		nk.NkStyleSetFont(ctx, state.smallFont.Handle())
 	}
 
+	state.gameState = ReadDefaultGameState()
 	exitC := make(chan struct{}, 1)
 	doneC := make(chan struct{}, 1)
 	closer.Bind(func() {
@@ -73,27 +74,22 @@ func main() {
 		<-doneC
 	})
 
-	state.gameState = ReadDefaultGameState()
-
-	fpsTicker := time.NewTicker(time.Second / 100)
-
-	state.windows = map[string]Window{}
-
+	fpsTicker := time.NewTicker(time.Second / 30)
 	for {
 		select {
 		case <-exitC:
 			nk.NkPlatformShutdown()
-			glfw.Terminate()
+			sdl.Quit()
 			fpsTicker.Stop()
 			close(doneC)
 			return
 		case <-fpsTicker.C:
-			if win.ShouldClose() {
-				close(exitC)
-				continue
+			for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+				switch event.(type) {
+				case *sdl.QuitEvent:
+					close(exitC)
+				}
 			}
-			state.ticksSinceStart++
-			glfw.PollEvents()
 			gfxMain(win, ctx, state)
 		}
 	}
@@ -201,7 +197,7 @@ func addLine(ctx *nk.Context, printable Printable, info func(), createNew func()
 	nk.NkLayoutRowEnd(ctx)
 }
 
-func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
+func gfxMain(win *sdl.Window, ctx *nk.Context, state *State) {
 	nk.NkPlatformNewFrame()
 	if (state.ticksSinceStart % 20) == 0 {
 		state.gameState = UpdateInventory(state.gameState)
@@ -222,7 +218,7 @@ func gfxMain(win *glfw.Window, ctx *nk.Context, state *State) {
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 	gl.ClearColor(bg[0], bg[1], bg[2], bg[3])
 	nk.NkPlatformRender(nk.AntiAliasingOn, maxVertexBuffer, maxElementBuffer)
-	win.SwapBuffers()
+	sdl.GLSwapWindow(win)
 }
 
 type State struct {

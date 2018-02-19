@@ -198,6 +198,62 @@
                     }
                 ],
                 "Name": "Copper Smelters"
+            },
+            {
+                "UnitCount": 0,
+                "TicksRemaining": 100,
+                "TicksPerCycle": 100,
+                "RecipeChangeSet": [
+                    {
+                        "InventoryItemId": "copper_plates",
+                        "ChangeAmount": -1
+                    },
+                    {
+                        "InventoryItemId": "copper_wire",
+                        "ChangeAmount": 1
+                    }
+                ],
+                "ChangeSetForBuildingNew": [
+                    {
+                        "InventoryItemId": "iron_plates",
+                        "ChangeAmount": -4
+                    },
+                    {
+                        "InventoryItemId": "copper_plates",
+                        "ChangeAmount": -4
+                    }
+                ],
+                "Name": "Copper Wire Factory"
+            },
+            {
+                "UnitCount": 0,
+                "TicksRemaining": 100,
+                "TicksPerCycle": 100,
+                "RecipeChangeSet": [
+                    {
+                        "InventoryItemId": "copper_plates",
+                        "ChangeAmount": -1
+                    },
+                    {
+                        "InventoryItemId": "copper_wire",
+                        "ChangeAmount": -1
+                    },
+                    {
+                        "InventoryItemId": "circuit_board",
+                        "ChangeAmount": 1
+                    }
+                ],
+                "ChangeSetForBuildingNew": [
+                    {
+                        "InventoryItemId": "iron_plate",
+                        "ChangeAmount": -1
+                    },
+                    {
+                        "InventoryItemId": "copper_wire",
+                        "ChangeAmount": -4
+                    }
+                ],
+                "Name": "Circuit Board Factory"
             }
         ]
     }

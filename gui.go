@@ -32,7 +32,7 @@ func main() {
 	var err error
 	sdl.Init(sdl.INIT_EVERYTHING)
 
-	win, err := sdl.CreateWindow("Nuklear Demo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, winWidth, winHeight, sdl.WINDOW_OPENGL)
+	win, err := sdl.CreateWindow("FactoriGo Prototype", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, winWidth, winHeight, sdl.WINDOW_OPENGL)
 	if err != nil {
 		closer.Fatalln(err)
 	}
@@ -131,7 +131,7 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 
 func createProductionBox(ctx *nk.Context, state *State) Production {
 	gameState := state.gameState
-	bounds := nk.NkRect(winWidth-150, 0, 150, winHeight)
+	bounds := nk.NkRect(winWidth-200, 0, 200, winHeight)
 	update := nk.NkBegin(ctx, "Production", bounds,
 		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowClosable|nk.WindowTitle)
 
@@ -147,7 +147,7 @@ func createProductionBox(ctx *nk.Context, state *State) Production {
 }
 
 func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
-	bounds := nk.NkRect(0, 0, 200, 350)
+	bounds := nk.NkRect(0, 0, 145, 350)
 	update := nk.NkBegin(ctx, "Inventory", bounds,
 		nk.WindowBorder|nk.WindowMovable|nk.WindowScalable|nk.WindowMinimizable|nk.WindowTitle)
 
@@ -175,10 +175,10 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 func addLine(ctx *nk.Context, printable Printable, info func(), createNew func(), actionable bool) {
 	nk.NkLayoutRowBegin(ctx, nk.LayoutDynamic, 20, 4)
 	{
-		nk.NkLayoutRowPush(ctx, 80)
+		nk.NkLayoutRowPush(ctx, 60)
 		nk.NkLabel(ctx, fmt.Sprintf("%s :", printable), nk.TextLeft)
 
-		nk.NkLayoutRowPush(ctx, 30)
+		nk.NkLayoutRowPush(ctx, 20)
 		nk.NkLabel(ctx, strconv.Itoa(printable.Count()), nk.TextRight)
 
 		/*

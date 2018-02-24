@@ -70,15 +70,12 @@ func main() {
 
 	state.gameState = ReadDefaultGameState()
 	renderer, _ := win.GetRenderer()
-	state.circuit_board = LoadIcon(renderer, "assets/circuit_board.png")
-	state.coal = LoadIcon(renderer, "assets/coal.png")
-	state.copper_ore = LoadIcon(renderer, "assets/copper_ore.png")
-	state.copper_plate = LoadIcon(renderer, "assets/copper_plate.png")
-	state.copper_wire = LoadIcon(renderer, "assets/copper_wire.png")
-	state.iron_ore = LoadIcon(renderer, "assets/stone.png")
-	state.iron_plate = LoadIcon(renderer, "assets/iron_plate.png")
-	state.stone = LoadIcon(renderer, "assets/stone.png")
-	state.wood = LoadIcon(renderer, "assets/wood.png")
+
+	for key, _ := range state.gameState.CurrentInventory.Items {
+		newItem := state.gameState.CurrentInventory.Items[key]
+		newItem.Icon = LoadIcon(renderer, fmt.Sprintf("assets/%s.png", key))
+		state.gameState.CurrentInventory.Items[key] = newItem
+	}
 
 	exitC := make(chan struct{}, 1)
 	doneC := make(chan struct{}, 1)
@@ -138,24 +135,11 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 	nk.NkLayoutRowDynamic(ctx, 20, 5)
 	{
 		for _, change := range productionUnit.ChangeSetForBuildingNew {
-			if change.InventoryItemId == "stone" {
-				nk.NkImage(ctx, state.stone)
-			} else if change.InventoryItemId == "wood" {
-				nk.NkImage(ctx, state.wood)
-			} else if change.InventoryItemId == "coal" {
-				nk.NkImage(ctx, state.coal)
-			} else if change.InventoryItemId == "iron_ore" {
-				nk.NkImage(ctx, state.iron_ore)
-			} else if change.InventoryItemId == "copper_ore" {
-				nk.NkImage(ctx, state.copper_ore)
-			} else if change.InventoryItemId == "iron_plate" {
-				nk.NkImage(ctx, state.iron_plate)
-			} else if change.InventoryItemId == "copper_plate" {
-				nk.NkImage(ctx, state.copper_ore)
-			} else if change.InventoryItemId == "copper_plate" {
-				nk.NkImage(ctx, state.copper_plate)
-			} else if change.InventoryItemId == "circuit_board" {
-				nk.NkImage(ctx, state.circuit_board)
+			item := state.gameState.CurrentInventory.Items[change.InventoryItemId]
+			if icon, ok := item.Icon.(nk.Image); ok {
+				nk.NkImage(ctx, icon)
+			} else {
+				fmt.Printf("ERROR: Item.Icon is not NkImage \n\tActual type is %v\n", item.Icon)
 			}
 		}
 	}
@@ -306,10 +290,11 @@ func onError(code int32, msg string) {
 }
 
 func LoadIcon(renderer *sdl.Renderer, filename string) nk.Image {
+	fmt.Println("Loading " + filename)
 	surf, err := img.Load(filename)
 
 	if err != nil {
-		fmt.Printf("Failed loading image %s, reason : %s", filename, err)
+		fmt.Printf("Failed loading image \n\tFilename : ''%s', \n\tReason : %s\n", filename, err)
 	}
 	rect := sdl.Rect{}
 	surf.GetClipRect(&rect)

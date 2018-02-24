@@ -1,5 +1,7 @@
 package main
 
+type Icon interface{}
+
 type InventoryItemChangeSet []InventoryItemChange
 
 type Inventory struct {
@@ -11,6 +13,7 @@ type InventoryItem struct {
 	Name              string `json:"name"`
 	Id                string `json:"id,id"`
 	CanBeMadeManually bool   `json:"can_be_made_manually"`
+	Icon              Icon   `json:"-"`
 }
 
 func NewInventory() Inventory {

@@ -16,6 +16,10 @@ type InventoryItem struct {
 	Icon              Icon   `json:"-"`
 }
 
+func NewInventoryItem(itemCount int, name string, id string, canBeMadeManually bool) InventoryItem {
+	return InventoryItem{itemCount, name, id, canBeMadeManually, nil}
+}
+
 func NewInventory() Inventory {
 	inventory := Inventory{}
 	inventory.Items = map[string]InventoryItem{}

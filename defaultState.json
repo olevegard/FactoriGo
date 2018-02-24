@@ -245,7 +245,7 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plate",
+                        "InventoryItemId": "iron_plates",
                         "ChangeAmount": -1
                     },
                     {

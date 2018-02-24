@@ -8,9 +8,11 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+	"unsafe"
 
 	"github.com/go-gl/gl/v3.2-core/gl"
 	"github.com/olevegard/nuklear/nk"
+	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/xlab/closer"
 )
@@ -67,6 +69,17 @@ func main() {
 	}
 
 	state.gameState = ReadDefaultGameState()
+	renderer, _ := win.GetRenderer()
+	state.circuit_board = LoadIcon(renderer, "assets/circuit_board.png")
+	state.coal = LoadIcon(renderer, "assets/coal.png")
+	state.copper_ore = LoadIcon(renderer, "assets/copper_ore.png")
+	state.copper_plate = LoadIcon(renderer, "assets/copper_plate.png")
+	state.copper_wire = LoadIcon(renderer, "assets/copper_wire.png")
+	state.iron_ore = LoadIcon(renderer, "assets/stone.png")
+	state.iron_plate = LoadIcon(renderer, "assets/iron_plate.png")
+	state.stone = LoadIcon(renderer, "assets/stone.png")
+	state.wood = LoadIcon(renderer, "assets/wood.png")
+
 	exitC := make(chan struct{}, 1)
 	doneC := make(chan struct{}, 1)
 	closer.Bind(func() {
@@ -116,6 +129,42 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
 	{
 		nk.NkLabel(ctx, fmt.Sprintf("Time Left : %d", productionUnit.TicksRemaining), nk.TextLeft)
+	}
+
+	nk.NkLayoutRowDynamic(ctx, 20, 1)
+	{
+		nk.NkLabel(ctx, "Requirements : ", nk.TextLeft)
+	}
+	nk.NkLayoutRowDynamic(ctx, 20, 5)
+	{
+		for _, change := range productionUnit.ChangeSetForBuildingNew {
+			if change.InventoryItemId == "stone" {
+				nk.NkImage(ctx, state.stone)
+			} else if change.InventoryItemId == "wood" {
+				nk.NkImage(ctx, state.wood)
+			} else if change.InventoryItemId == "coal" {
+				nk.NkImage(ctx, state.coal)
+			} else if change.InventoryItemId == "iron_ore" {
+				nk.NkImage(ctx, state.iron_ore)
+			} else if change.InventoryItemId == "copper_ore" {
+				nk.NkImage(ctx, state.copper_ore)
+			} else if change.InventoryItemId == "iron_plates" {
+				nk.NkImage(ctx, state.iron_plate)
+			} else if change.InventoryItemId == "copper_plates" {
+				nk.NkImage(ctx, state.copper_ore)
+			} else if change.InventoryItemId == "copper_plates" {
+				nk.NkImage(ctx, state.copper_plate)
+			} else if change.InventoryItemId == "circuit_board" {
+				nk.NkImage(ctx, state.circuit_board)
+			}
+		}
+	}
+
+	nk.NkLayoutRowDynamic(ctx, 12, 5)
+	{
+		for _, change := range productionUnit.ChangeSetForBuildingNew {
+			nk.NkLabel(ctx, strconv.Itoa(change.ChangeAmount*-1), nk.TextCentered)
+		}
 	}
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
@@ -234,6 +283,16 @@ type State struct {
 	bigFont         *nk.Font
 	ticksSinceStart uint64
 
+	wood          nk.Image
+	coal          nk.Image
+	stone         nk.Image
+	circuit_board nk.Image
+	iron_ore      nk.Image
+	copper_ore    nk.Image
+	iron_plate    nk.Image
+	copper_plate  nk.Image
+	copper_wire   nk.Image
+
 	windows map[string]Window `json:"items"`
 }
 
@@ -244,4 +303,26 @@ type Window struct {
 
 func onError(code int32, msg string) {
 	log.Printf("[glfw ERR]: error %d: %s", code, msg)
+}
+
+func LoadIcon(renderer *sdl.Renderer, filename string) nk.Image {
+	surf, err := img.Load(filename)
+
+	if err != nil {
+		fmt.Printf("Failed loading image %s, reason : %s", filename, err)
+	}
+	rect := sdl.Rect{}
+	surf.GetClipRect(&rect)
+	var textureId uint32
+
+	gl.GenTextures(1, &textureId)
+	gl.BindTexture(gl.TEXTURE_2D, textureId)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_NEAREST)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, rect.W, rect.H, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&surf.Pixels()[0]))
+	gl.GenerateMipmap(gl.TEXTURE_2D)
+
+	return nk.NkImageId(int32(textureId))
 }

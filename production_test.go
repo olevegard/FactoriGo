@@ -336,7 +336,7 @@ func TestThatProductionUnitHasCountFunc(t *testing.T) {
 
 func TestThatWeCanCreatePartial(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
@@ -348,14 +348,14 @@ func TestThatWeCanCreatePartial(t *testing.T) {
 	inventory = AddInventoryItem(inventory, InventoryItem{3, "Coal", "coal", false})
 
 	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
-	assert.Equal(t, 1, inventory.Items["iron_plates"].ItemCount)
+	assert.Equal(t, 1, inventory.Items["iron_plate"].ItemCount)
 	assert.Equal(t, 2, inventory.Items["iron_ore"].ItemCount)
 	assert.Equal(t, 1, inventory.Items["coal"].ItemCount)
 }
 
 func TestThatWeCanGetMaxFactorIfNotAllCanBeMade(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
@@ -372,7 +372,7 @@ func TestThatWeCanGetMaxFactorIfNotAllCanBeMade(t *testing.T) {
 
 func TestThatWeCanGetMaxFactorIfAllCanBeMade(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
@@ -389,7 +389,7 @@ func TestThatWeCanGetMaxFactorIfAllCanBeMade(t *testing.T) {
 
 func TestThatWeCanGetMaxFactorIfNothingCanBeMade(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -10))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
@@ -407,7 +407,7 @@ func TestThatWeCanGetMaxFactorIfNothingCanBeMade(t *testing.T) {
 
 func TestThatWeCanGetMaxFactorCantExceedUnits(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)
@@ -426,7 +426,7 @@ func TestThatWeCanGetMaxFactorCantExceedUnits(t *testing.T) {
 
 func TestThatMaxFactorIs0IfNoUnits(t *testing.T) {
 	changeSet := InventoryItemChangeSet{}
-	changeSet = append(changeSet, NewInventoryChange("iron_plates", 1))
+	changeSet = append(changeSet, NewInventoryChange("iron_plate", 1))
 	changeSet = append(changeSet, NewInventoryChange("iron_ore", -1))
 	changeSet = append(changeSet, NewInventoryChange("coal", -2))
 	productionUnit := MakeNewProductionUnitWithNoBuildNew(1, "Iron Mine", changeSet)

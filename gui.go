@@ -148,11 +148,11 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 				nk.NkImage(ctx, state.iron_ore)
 			} else if change.InventoryItemId == "copper_ore" {
 				nk.NkImage(ctx, state.copper_ore)
-			} else if change.InventoryItemId == "iron_plates" {
+			} else if change.InventoryItemId == "iron_plate" {
 				nk.NkImage(ctx, state.iron_plate)
-			} else if change.InventoryItemId == "copper_plates" {
+			} else if change.InventoryItemId == "copper_plate" {
 				nk.NkImage(ctx, state.copper_ore)
-			} else if change.InventoryItemId == "copper_plates" {
+			} else if change.InventoryItemId == "copper_plate" {
 				nk.NkImage(ctx, state.copper_plate)
 			} else if change.InventoryItemId == "circuit_board" {
 				nk.NkImage(ctx, state.circuit_board)
@@ -209,7 +209,7 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	keys := []string{"stone", "wood", "coal", "iron_ore", "copper_ore", "iron_plates", "copper_plates", "copper_wire", "circuit_board"}
+	keys := []string{"stone", "wood", "coal", "iron_ore", "copper_ore", "iron_plate", "copper_plate", "copper_wire", "circuit_board"}
 
 	for _, key := range keys {
 

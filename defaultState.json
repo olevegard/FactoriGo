@@ -25,10 +25,10 @@
                 "id": "wood",
                 "can_be_made_manually": true
             },
-            "copper_plates": {
+            "copper_plate": {
                 "count": 0,
                 "name": "Copper plates",
-                "id": "copper_plates",
+                "id": "copper_plate",
                 "can_be_made_manually": false
             },
             "iron_ore": {
@@ -37,10 +37,10 @@
                 "id": "iron_ore",
                 "can_be_made_manually": true
             },
-            "iron_plates": {
+            "iron_plate": {
                 "count": 0,
                 "name": "Iron plates",
-                "id": "iron_plates",
+                "id": "iron_plate",
                 "can_be_made_manually": false
             },
             "copper_wire": {
@@ -79,7 +79,7 @@
                         "ChangeAmount": -2
                     }
                 ],
-                "Name": "Coal Mines"
+                "Name": "Coal Mine"
             },
             {
                 "UnitCount": 0,
@@ -101,7 +101,7 @@
                         "ChangeAmount": -2
                     }
                 ],
-                "Name": "Iron Mines"
+                "Name": "Iron Mine"
             },
             {
                 "UnitCount": 0,
@@ -123,7 +123,7 @@
                         "ChangeAmount": -2
                     }
                 ],
-                "Name": "Stone Mines"
+                "Name": "Stone Mine"
             },
             {
                 "UnitCount": 0,
@@ -131,7 +131,7 @@
                 "TicksPerCycle": 50,
                 "RecipeChangeSet": [
                     {
-                        "InventoryItemId": "iron_plates",
+                        "InventoryItemId": "iron_plate",
                         "ChangeAmount": 1
                     },
                     {
@@ -153,7 +153,7 @@
                         "ChangeAmount": -2
                     }
                 ],
-                "Name": "Iron Smelters"
+                "Name": "Iron Smelter"
             },
             {
                 "UnitCount": 0,
@@ -179,7 +179,7 @@
                 "TicksPerCycle": 100,
                 "RecipeChangeSet": [
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "copper_plate",
                         "ChangeAmount": 1
                     },
                     {
@@ -197,7 +197,7 @@
                         "ChangeAmount": -4
                     }
                 ],
-                "Name": "Copper Smelters"
+                "Name": "Copper Smelter"
             },
             {
                 "UnitCount": 0,
@@ -205,7 +205,7 @@
                 "TicksPerCycle": 100,
                 "RecipeChangeSet": [
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "copper_plate",
                         "ChangeAmount": -1
                     },
                     {
@@ -215,11 +215,11 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
+                        "InventoryItemId": "iron_plate",
                         "ChangeAmount": -4
                     },
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "copper_plate",
                         "ChangeAmount": -4
                     }
                 ],
@@ -231,7 +231,7 @@
                 "TicksPerCycle": 100,
                 "RecipeChangeSet": [
                     {
-                        "InventoryItemId": "copper_plates",
+                        "InventoryItemId": "copper_plate",
                         "ChangeAmount": -1
                     },
                     {
@@ -245,7 +245,7 @@
                 ],
                 "ChangeSetForBuildingNew": [
                     {
-                        "InventoryItemId": "iron_plates",
+                        "InventoryItemId": "iron_plate",
                         "ChangeAmount": -1
                     },
                     {

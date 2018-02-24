@@ -157,7 +157,7 @@ func TestThatGetNewCountAfterInventoryItemChangeReturnsCorrectCount(t *testing.T
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, InventoryItem{1, "Iron ore", "iron_ore", false})
 	inventory = AddInventoryItem(inventory, InventoryItem{2, "Copper ore", "copper_ore", false})
-	inventory = AddInventoryItem(inventory, InventoryItem{3, "Copper plates", "copper_plates", false})
+	inventory = AddInventoryItem(inventory, InventoryItem{3, "Copper plates", "copper_plate", false})
 
 	inventoryChange := NewInventoryChange("iron_ore", -1)
 	assert.Equal(t, 0, GetNewCountAfterInventoryItemChange(inventory, inventoryChange))
@@ -165,7 +165,7 @@ func TestThatGetNewCountAfterInventoryItemChangeReturnsCorrectCount(t *testing.T
 	inventoryChange = NewInventoryChange("copper_ore", -3)
 	assert.Equal(t, -1, GetNewCountAfterInventoryItemChange(inventory, inventoryChange))
 
-	inventoryChange = NewInventoryChange("copper_plates", 0)
+	inventoryChange = NewInventoryChange("copper_plate", 0)
 	assert.Equal(t, 3, GetNewCountAfterInventoryItemChange(inventory, inventoryChange))
 }
 

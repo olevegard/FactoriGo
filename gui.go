@@ -120,9 +120,14 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
 	{
-		if nk.NkButtonLabel(ctx, "Build") > 0 {
-			productionUnit, state.gameState.CurrentInventory = BuilNewProductionUnit(productionUnit, state.gameState.CurrentInventory)
-			return productionUnit
+		if CanBuilNewProductionUnit(productionUnit, state.gameState.CurrentInventory) {
+			if nk.NkButtonLabel(ctx, "Build") > 0 {
+				productionUnit, state.gameState.CurrentInventory = BuilNewProductionUnit(productionUnit, state.gameState.CurrentInventory)
+				return productionUnit
+			}
+		} else {
+			if nk.NkButtonLabel(ctx, "Can't build") > 0 {
+			}
 		}
 	}
 

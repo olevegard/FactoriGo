@@ -65,6 +65,28 @@
                 "TicksPerCycle": 10,
                 "RecipeChangeSet": [
                     {
+                        "InventoryItemId": "wood",
+                        "ChangeAmount": 1
+                    }
+                ],
+                "ChangeSetForBuildingNew": [
+                    {
+                        "InventoryItemId": "iron_plate",
+                        "ChangeAmount": -2
+                    },
+                    {
+                        "InventoryItemId": "wood",
+                        "ChangeAmount": -2
+                    }
+                ],
+                "Name": "Lumber Mill"
+            },
+            {
+                "UnitCount": 0,
+                "TicksRemaining": 10,
+                "TicksPerCycle": 10,
+                "RecipeChangeSet": [
+                    {
                         "InventoryItemId": "coal",
                         "ChangeAmount": 1
                     }

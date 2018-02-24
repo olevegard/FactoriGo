@@ -290,7 +290,6 @@ func onError(code int32, msg string) {
 }
 
 func LoadIcon(renderer *sdl.Renderer, filename string) nk.Image {
-	fmt.Println("Loading " + filename)
 	surf, err := img.Load(filename)
 
 	if err != nil {

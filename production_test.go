@@ -292,6 +292,7 @@ func CheckThatUpdateProductionUnitTimerUpdateTickReturnsTrueAndResetsIfTicksRema
 
 func TestThatMaybeResetTickReturnsTrueAndResetsIfTicksRemainingIs0(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(1, "Iron Mine")
+	productionUnit.UnitCount = 1
 	wasReset := false
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 
@@ -300,13 +301,15 @@ func TestThatMaybeResetTickReturnsTrueAndResetsIfTicksRemainingIs0(t *testing.T)
 	assert.Equal(t, 1, productionUnit.TicksPerCycle)
 }
 
-func TestThatMaybeResetTickReturnsDecrementsCount(t *testing.T) {
+func TestThatMaybeResetTickReturnsDecrementedCount(t *testing.T) {
 	wasReset := false
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(2, "Iron Mine")
+	productionUnit.UnitCount = 1
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 
+	assert.False(t, wasReset)
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
-	assert.Equal(t, 2, productionUnit.TicksPerCycle)
+	assert.Equal(t, 1, int(productionUnit.TicksRemaining))
 
 	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 	assert.True(t, wasReset)
@@ -451,10 +454,26 @@ func TestThatMaxFactorIsCountOfUnitsIfReceipeDontNeedItems(t *testing.T) {
 	productionUnit.TicksRemaining = 1
 
 	inventory := NewInventory()
-	inventory = AddInventoryItem(inventory, InventoryItem{3000, "Iron Ore", "iron_ore", false})
+	inventory = AddInventoryItem(inventory, NewInventoryItem(3000, "Iron Ore", "iron_ore", false))
 
 	factor := GetMaxFactorForProductionUnit(productionUnit, inventory)
 
 	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
 	assert.Equal(t, 1000, factor)
+}
+
+func TestThatTickDoesntDecrementRemainingIfNoUnits(t *testing.T) {
+	wasReset := false
+	productionUnit := MakeNewProductionUnitWithNoChangeSet(2, "Iron Mine")
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	productionUnit.UnitCount = 0
+
+	assert.False(t, wasReset)
+	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
+
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	assert.False(t, wasReset)
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
+	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
 }

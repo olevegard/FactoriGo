@@ -110,6 +110,10 @@ func (value ResetableInt) ResetIfValue(conditionValue, resetValue int) (bool, Re
 }
 
 func UpdateProductionUnitTimer(unit ProductionUnit) (bool, ProductionUnit) {
+	if unit.Count() == 0 {
+		return false, unit
+	}
+
 	unit.TicksRemaining--
 	wasReset := false
 	wasReset, unit.TicksRemaining = unit.TicksRemaining.ResetIfValue(0, unit.TicksPerCycle)

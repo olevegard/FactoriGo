@@ -120,12 +120,33 @@ func addProductionUnitLine(ctx *nk.Context, state *State, productionUnit Product
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
 	{
-		nk.NkLabel(ctx, "Generates : 10 x IO", nk.TextLeft)
+		nk.NkLabel(ctx, fmt.Sprintf("Time Left : %d", productionUnit.TicksRemaining), nk.TextLeft)
 	}
 
+	// TODO: The section for Generates and Requirements should be created from a function instead of duplicating
+	// TODO: Find a way to display how much it generates each cycle ( change amount * ProductionUnit count)
 	nk.NkLayoutRowDynamic(ctx, 20, 1)
 	{
-		nk.NkLabel(ctx, fmt.Sprintf("Time Left : %d", productionUnit.TicksRemaining), nk.TextLeft)
+		nk.NkLabel(ctx, "Generates : ", nk.TextLeft)
+	}
+
+	nk.NkLayoutRowDynamic(ctx, 20, 5)
+	{
+		for _, change := range productionUnit.RecipeChangeSet {
+			item := state.gameState.CurrentInventory.Items[change.InventoryItemId]
+			if icon, ok := item.Icon.(nk.Image); ok {
+				nk.NkImage(ctx, icon)
+			} else {
+				fmt.Printf("ERROR: Item.Icon is not NkImage \n\tActual type is %v\n", item.Icon)
+			}
+		}
+	}
+
+	nk.NkLayoutRowDynamic(ctx, 12, 5)
+	{
+		for _, change := range productionUnit.RecipeChangeSet {
+			nk.NkLabel(ctx, strconv.Itoa(change.ChangeAmount), nk.TextCentered)
+		}
 	}
 
 	nk.NkLayoutRowDynamic(ctx, 20, 1)

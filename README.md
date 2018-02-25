@@ -11,6 +11,7 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 - Inventory system with a map of inventory items with count and title
 
 ## Todo:
+- Manually creating items should take time
 - Make and implement a better GUI
 - Small windows for each production unit. 
 - - These should show if they are getting what they need

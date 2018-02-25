@@ -54,6 +54,18 @@
                 "name": "Circuit Boards",
                 "id": "circuit_board",
                 "can_be_made_manually": true
+            },
+            "iron_gear": {
+                "count": 0,
+                "name": "Iron Gears",
+                "id": "iron_gear",
+                "can_be_made_manually": true
+            },
+            "simple_robotic_warrior": {
+                "count": 0,
+                "name": "Simple Robotic Warror",
+                "id": "simple_robotic_warrior",
+                "can_be_made_manually": false
             }
         }
     },
@@ -276,6 +288,40 @@
                     }
                 ],
                 "Name": "Circuit Board Factory"
+            },
+            {
+                "UnitCount": 0,
+                "TicksRemaining": 30,
+                "TicksPerCycle": 30,
+                "RecipeChangeSet": [
+                    {
+                        "InventoryItemId": "iron_plate",
+                        "ChangeAmount": -40
+                    },
+                    {
+                        "InventoryItemId": "iron_gear",
+                        "ChangeAmount": -20
+                    },
+                    {
+                        "InventoryItemId": "circuit_board",
+                        "ChangeAmount": -10
+                    },
+                    {
+                        "InventoryItemId": "simple_robotic_warrior",
+                        "ChangeAmount": 1
+                    }
+                ],
+                "ChangeSetForBuildingNew": [
+                    {
+                        "InventoryItemId": "iron_plate",
+                        "ChangeAmount": -10
+                    },
+                    {
+                        "InventoryItemId": "circuit_board",
+                        "ChangeAmount": -4
+                    }
+                ],
+                "Name": "Simple Robotic Warrior Factory"
             }
         ]
     }

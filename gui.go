@@ -214,7 +214,7 @@ func createInventory(ctx *nk.Context, inventory Inventory) Inventory {
 		return inventory
 	}
 
-	keys := []string{"stone", "wood", "coal", "iron_ore", "copper_ore", "iron_plate", "copper_plate", "copper_wire", "circuit_board"}
+	keys := []string{"stone", "wood", "coal", "iron_ore", "copper_ore", "iron_plate", "copper_plate", "copper_wire", "circuit_board", "iron_gear", "simple_robotic_warrior"}
 
 	for _, key := range keys {
 

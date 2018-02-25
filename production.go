@@ -39,6 +39,11 @@ func CanBuilNewProductionUnit(productionUnit ProductionUnit, inventory Inventory
 	return canBuild
 }
 
+func CanCreateNewBatch(productionUnit ProductionUnit, inventory Inventory) bool {
+	canCreate, _ := ApplyInventoryItemChangeSet(inventory, productionUnit.RecipeChangeSet)
+	return canCreate
+}
+
 func BuilNewProductionUnit(productionUnit ProductionUnit, inventory Inventory) (ProductionUnit, Inventory) {
 	canBuild, newInventory := ApplyInventoryItemChangeSet(inventory, productionUnit.ChangeSetForBuildingNew)
 
@@ -79,7 +84,7 @@ func GetMaxFactorForProductionUnit(productionUnit ProductionUnit, inventory Inve
 }
 
 func CreateNewBatchIfTimeBecomes0(productionUnit ProductionUnit, inventory Inventory) (ProductionUnit, Inventory) {
-	shouldBuildNew, newProductionUnit := UpdateProductionUnitTimer(productionUnit)
+	shouldBuildNew, newProductionUnit := UpdateProductionUnitTimer(productionUnit, inventory)
 
 	if !shouldBuildNew {
 		return newProductionUnit, inventory
@@ -109,14 +114,14 @@ func (value ResetableInt) ResetIfValue(conditionValue, resetValue int) (bool, Re
 	return false, value
 }
 
-func UpdateProductionUnitTimer(unit ProductionUnit) (bool, ProductionUnit) {
-	if unit.Count() == 0 {
-		return false, unit
+func UpdateProductionUnitTimer(productionUnit ProductionUnit, inventory Inventory) (bool, ProductionUnit) {
+	if productionUnit.Count() == 0 || !CanCreateNewBatch(productionUnit, inventory) {
+		return false, productionUnit
 	}
 
-	unit.TicksRemaining--
+	productionUnit.TicksRemaining--
 	wasReset := false
-	wasReset, unit.TicksRemaining = unit.TicksRemaining.ResetIfValue(0, unit.TicksPerCycle)
+	wasReset, productionUnit.TicksRemaining = productionUnit.TicksRemaining.ResetIfValue(0, productionUnit.TicksPerCycle)
 
-	return wasReset, unit
+	return wasReset, productionUnit
 }

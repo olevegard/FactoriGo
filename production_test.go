@@ -227,11 +227,12 @@ func TestThatWeCanCheckThatWeCantBuilProductionUnit(t *testing.T) {
 	assert.False(t, CanBuilNewProductionUnit(productionUnit, inventory))
 }
 
-func TestThatWeCanBuildNewProductionUnitDoesntChangeInv(t *testing.T) {
+func TestThatCanBuildNewProductionUnitDoesntChangeInv(t *testing.T) {
 	buildNewChangeSet := InventoryItemChangeSet{}
 	buildNewChangeSet = append(buildNewChangeSet, NewInventoryChange("iron_ore", -1))
 
 	productionUnit := MakeNewProductionUnitWithNoRecipe(0, "Iron Mine", buildNewChangeSet)
+	productionUnit.UnitCount = 1
 
 	inventory := NewInventory()
 	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
@@ -280,21 +281,22 @@ func TestThatResetableIntDoesntResetsIfValueIsNotEqualToResetValue(t *testing.T)
 }
 
 func CheckThatUpdateProductionUnitTimerUpdateTickReturnsTrueAndResetsIfTicksRemainingIs0(t *testing.T) {
+	inventory := Inventory{}
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(1, "Iron Mine")
+
 	wasReset := false
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, inventory)
 
 	assert.True(t, wasReset)
 	assert.Equal(t, 0, productionUnit.TicksRemaining)
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
-
 }
 
 func TestThatMaybeResetTickReturnsTrueAndResetsIfTicksRemainingIs0(t *testing.T) {
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(1, "Iron Mine")
 	productionUnit.UnitCount = 1
 	wasReset := false
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
 
 	assert.True(t, wasReset)
 	assert.Equal(t, 1, int(productionUnit.TicksRemaining))
@@ -305,13 +307,13 @@ func TestThatMaybeResetTickReturnsDecrementedCount(t *testing.T) {
 	wasReset := false
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(2, "Iron Mine")
 	productionUnit.UnitCount = 1
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
 
 	assert.False(t, wasReset)
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 	assert.Equal(t, 1, int(productionUnit.TicksRemaining))
 
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
 	assert.True(t, wasReset)
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
@@ -465,15 +467,125 @@ func TestThatMaxFactorIsCountOfUnitsIfReceipeDontNeedItems(t *testing.T) {
 func TestThatTickDoesntDecrementRemainingIfNoUnits(t *testing.T) {
 	wasReset := false
 	productionUnit := MakeNewProductionUnitWithNoChangeSet(2, "Iron Mine")
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
 	productionUnit.UnitCount = 0
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
 
 	assert.False(t, wasReset)
 	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 
-	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit)
+	wasReset, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
 	assert.False(t, wasReset)
 	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
+}
+
+func TestThatCanCreateNewBatchDoesnChangeInv(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -2))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(0, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	assert.False(t, CanCreateNewBatch(productionUnit, inventory))
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+}
+
+func TestThatCanCreateNewBatchReturnsTrueIfEnoughInv(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -1))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(0, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	assert.True(t, CanCreateNewBatch(productionUnit, inventory))
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+}
+
+func TestThatCanCreateNewBatchReturnsFalseIfNotEnoughInv(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -2))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(0, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	assert.False(t, CanCreateNewBatch(productionUnit, inventory))
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+}
+
+func TestThatCanCreateNewBatchReturnsTrueIfPatial(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -1))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(0, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	assert.True(t, CanCreateNewBatch(productionUnit, inventory))
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+}
+
+func TestThatUpdateTimerDoesnUpdateIfCantBuildNew(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -2))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(2, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	wasUpdated := false
+	wasUpdated, productionUnit = UpdateProductionUnitTimer(productionUnit, Inventory{})
+
+	assert.False(t, wasUpdated)
+	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
+}
+
+func TestThatUpdateTimerUpdatesIfCantBuildPartial(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -1))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(2, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	assert.Equal(t, 1, inventory.Items["iron_ore"].Count())
+
+	wasUpdated := false
+	wasUpdated, productionUnit = UpdateProductionUnitTimer(productionUnit, inventory)
+
+	assert.False(t, wasUpdated)
+
+	assert.Equal(t, 1, int(productionUnit.TicksRemaining))
+}
+
+func TestThatTickDoesntDecrementRemainingIfNotProducing(t *testing.T) {
+	recipeNewChangeSet := InventoryItemChangeSet{}
+	recipeNewChangeSet = append(recipeNewChangeSet, NewInventoryChange("iron_ore", -2))
+
+	inventory := NewInventory()
+	inventory = AddInventoryItem(inventory, NewInventoryItem(1, "Iron Ore", "iron_ore", false))
+
+	productionUnit := MakeNewProductionUnitWithNoBuildNew(2, "Iron Mine", recipeNewChangeSet)
+	productionUnit.UnitCount = 1
+
+	assert.False(t, CanCreateNewBatch(productionUnit, inventory))
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+
+	productionUnit, inventory = CreateNewBatchIfTimeBecomes0(productionUnit, inventory)
+
+	assert.Equal(t, 1, inventory.Items["iron_ore"].ItemCount)
+	assert.Equal(t, 2, int(productionUnit.TicksRemaining))
+	assert.Equal(t, 2, productionUnit.TicksPerCycle)
 }

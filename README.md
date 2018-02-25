@@ -11,7 +11,8 @@ An attempt at making an automation game similar to Factorio in Golang. But unlik
 - Inventory system with a map of inventory items with count and title
 
 ## Todo:
-- Manually creating items should take time
+- There should be a queue for items being created. Each item should take some time to make
+- The queue above should be visible on screen
 - Make and implement a better GUI
 - Small windows for each production unit. 
 - - These should show if they are getting what they need
